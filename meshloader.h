@@ -10,8 +10,8 @@ public:
   MeshLoader();
   virtual ~MeshLoader();
 
-  virtual bool load(const char* filename, MeshData* meshData);
-  virtual bool load(std::istream& input, MeshData* meshData) = 0;
+  virtual bool load(const char *filename, MeshData *meshData);
+  virtual bool load(std::istream &input, MeshData *meshData) = 0;
 
 };
 

@@ -9,7 +9,7 @@ public:
   MeshLoaderOBJ();
   virtual ~MeshLoaderOBJ();
 
-  bool load(std::istream input);
+  bool load(std::istream &input);
 
 private:
 
