@@ -105,6 +105,22 @@ bool MeshData::setAttribute(uint vertexId, uint attributeId, const void *data)
   return true;
 }
 
+bool MeshData::setTriangle(uint triangleId, uint a, uint b, uint c)
+{
+  // Check if is valid triangle
+  if(!(triangleId < _nTriangles)) {
+    return false;
+  }
+
+  // Copy triangle elements
+  int offset = triangleId * 3;
+  _triangles[offset + 0] = a;
+  _triangles[offset + 1] = b;
+  _triangles[offset + 2] = c;
+
+  return true;
+}
+
 Mesh::Attribute::Attribute(const MeshData::Attribute &attribute, uint nVertices) :
   _identifier(NULL),
   _dataType(attribute.dataType()),

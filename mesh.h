@@ -84,6 +84,8 @@ public:
   bool setVertex(uint vertexId, real_t x, real_t y, real_t z);
   bool setAttribute(uint vertexId, uint attributeId, const void* data);
 
+  bool setTriangle(uint triangleId, uint a, uint b, uint c);
+
   void calcNormals();
 
 protected:
