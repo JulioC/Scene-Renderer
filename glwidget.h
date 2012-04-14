@@ -31,6 +31,7 @@ public:
   explicit GLWidget(QWidget *parent = 0);
   virtual ~GLWidget();
 
+  void loadPLY(const char* filename);
   void loadOFF(const char* filename);
 
   void renderMode(RenderMode mode);

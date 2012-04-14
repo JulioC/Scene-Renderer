@@ -6,7 +6,8 @@ SOURCES += main.cpp \
     glwidget.cpp \
     trackball.cpp \
     camera.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    meshloaderply.cpp
 
 HEADERS += \
     mesh.h \
@@ -14,7 +15,8 @@ HEADERS += \
     glwidget.h \
     trackball.h \
     camera.h \
-    mainwindow.h
+    mainwindow.h \
+    meshloaderply.h
 
 FORMS += \
     mainwindow.ui

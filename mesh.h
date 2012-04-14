@@ -87,7 +87,7 @@ public:
   bool setTriangle(uint triangleId, ushort a, ushort b, ushort c);
 
   void normalize(real_t size = 1.0);
-  void calculeNormals(bool weighted = false, const char* identifier = "a_Normal");
+  void computeNormals(bool weighted = false, const char* identifier = "a_Normal");
 
 protected:
   uint _nVertices;

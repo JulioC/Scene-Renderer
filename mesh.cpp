@@ -157,7 +157,7 @@ void MeshData::normalize(real_t size)
   }
 }
 
-void MeshData::calculeNormals(bool weighted, const char *identifier)
+void MeshData::computeNormals(bool weighted, const char *identifier)
 {
   // Zero the number of references for each vertex
   uint *count = new uint[_nVertices];

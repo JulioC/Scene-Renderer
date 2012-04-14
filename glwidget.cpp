@@ -6,6 +6,7 @@
 
 #include "mesh.h"
 #include "meshloaderoff.h"
+#include "meshloaderply.h"
 #include "trackball.h"
 
 GLWidget::GLWidget(QWidget *parent) :
@@ -71,7 +72,24 @@ void GLWidget::loadOFF(const char *filename) {
   }
 
   meshData->normalize();
-  meshData->calculeNormals();
+  meshData->computeNormals();
+
+  if(_mesh) {
+    delete _mesh;
+  }
+  _mesh = new Mesh(meshData);
+  delete meshData;
+}
+
+void GLWidget::loadPLY(const char *filename) {
+  MeshData *meshData = MeshLoaderPLY::load(filename);
+  if(!meshData) {
+    qDebug("Failed to load PLY file %s", filename);
+    return;
+  }
+
+  meshData->normalize();
+  meshData->computeNormals();
 
   if(_mesh) {
     delete _mesh;
@@ -105,8 +123,9 @@ void GLWidget::initializeGL() {
 
   setShaders(":/shaders/phong/vshader.glsl", ":/shaders/phong/fshader.glsl");
 
-  loadOFF("/home/julio/CG/Projeto2/models/homer.off");
-  //loadModel("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
+  //loadOFF("/home/julio/CG/Projeto2/models/homer.off");
+  //loadPLY("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
+  loadPLY("/home/julio/CG/Modelos/bunny/reconstruction/bun_zipper.ply");
 }
 
 void GLWidget::paintGL() {
