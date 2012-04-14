@@ -1,7 +1,9 @@
 #ifndef MESHLOADEROFF_H
 #define MESHLOADEROFF_H
 
-#include <mesh.h>
+#include <istream>
+
+class MeshData;
 
 class MeshLoaderOFF
 {

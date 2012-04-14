@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+#include "mesh.h"
+
 MeshData* MeshLoaderOFF::load(const char *filename)
 {
   std::fstream stream(filename, std::fstream::in);
