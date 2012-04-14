@@ -6,13 +6,7 @@
 class MeshLoaderOBJ : MeshLoader
 {
 public:
-  MeshLoaderOBJ();
-  virtual ~MeshLoaderOBJ();
-
-  bool load(std::istream &input);
-
-private:
-
+  static MeshData* load(std::istream &input);
 };
 
 #endif // MESHLOADEROBJ_H

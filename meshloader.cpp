@@ -2,17 +2,14 @@
 
 #include <fstream>
 
-MeshLoader::MeshLoader() :
-  _loaded(false)
-{
-}
-
-MeshLoader::~MeshLoader()
-{
-}
-
-bool MeshLoader::load(const char *filename, MeshData *meshData)
+MeshData* MeshLoader::load(const char *filename)
 {
   std::fstream stream(filename, std::fstream::in);
-  return load(stream, meshData);
+  return load(stream);
+}
+
+
+MeshData* MeshLoader::load(std::istream &input)
+{
+  return NULL;
 }

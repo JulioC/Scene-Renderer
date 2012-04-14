@@ -4,14 +4,13 @@
 #include <string>
 #include <istream>
 
+#include "mesh.h"
+
 class MeshLoader
 {
 public:
-  MeshLoader();
-  virtual ~MeshLoader();
-
-  virtual bool load(const char *filename, MeshData *meshData);
-  virtual bool load(std::istream &input, MeshData *meshData) = 0;
+  static MeshData* load(const char *filename);
+  static MeshData* load(std::istream &input);
 
 };
 
