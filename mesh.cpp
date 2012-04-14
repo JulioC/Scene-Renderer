@@ -38,15 +38,13 @@ void MeshData::Attribute::set(uint vertexId, const void *data)
 MeshData::MeshData(uint nVertices, uint nTriangles) :
   _nVertices(nVertices),
   _nTriangles(nTriangles),
-  _vPosition(NULL),
-  _vNormal(NULL),
+  _vertices(NULL),
   _nAttributes(0),
   _attributes(),
   _triangles(NULL)
 {
   // Allocate space for vertex data and triangles
-  _vPosition = new real_t[nVertices * 4];
-  _vNormal = new real_t[nVertices * 4];
+  _vertices = new real_t[nVertices * 3];
   _triangles = new uint[nTriangles * 3];
 }
 
@@ -56,8 +54,7 @@ MeshData::~MeshData()
   for(uint i = 0; i < _nAttributes; ++i) {
     delete _attributes[i];
   }
-  delete[] _vPosition;
-  delete[] _vNormal;
+  delete[] _vertices;
   delete[] _triangles;
 }
 
@@ -79,7 +76,7 @@ int MeshData::regAttribute(const char* identifier,
   return index;
 }
 
-bool MeshData::setPosition(uint vertexId, real_t x, real_t y, real_t z, real_t w)
+bool MeshData::setVertex(uint vertexId, real_t x, real_t y, real_t z)
 {
   // Check if is valid vertex
   if(!(vertexId < _nVertices)) {
@@ -87,28 +84,10 @@ bool MeshData::setPosition(uint vertexId, real_t x, real_t y, real_t z, real_t w
   }
 
   // Copy the data in the proper segment
-  int offset = vertexId * 4;
-  _vPosition[offset + 0] = x;
-  _vPosition[offset + 1] = y;
-  _vPosition[offset + 2] = z;
-  _vPosition[offset + 3] = w;
-
-  return true;
-}
-
-bool MeshData::setNormal(uint vertexId, real_t x, real_t y, real_t z, real_t w)
-{
-  // Check if is valid vertex
-  if(!(vertexId < _nVertices)) {
-    return false;
-  }
-
-  // Copy the data in the proper segment
-  int offset = vertexId * 4;
-  _vNormal[offset + 0] = x;
-  _vNormal[offset + 1] = y;
-  _vNormal[offset + 2] = z;
-  _vNormal[offset + 3] = w;
+  int offset = vertexId * 3;
+  _vertices[offset + 0] = x;
+  _vertices[offset + 1] = y;
+  _vertices[offset + 2] = z;
 
   return true;
 }
@@ -164,17 +143,23 @@ Mesh::Mesh(const MeshData *meshData) :
   _nTriangles(meshData->nVertices()),
   _nAttributes(meshData->nAttributes()),
   _attributes(NULL),
+  _vertices(QGLBuffer::VertexBuffer),
   _triangles(QGLBuffer::IndexBuffer)
 {
+  // Build the vertex buffer and copy the data
+  _vertices.create();
+  _vertices.bind();
+  _vertices.allocate(meshData->triangles(), 3 * sizeof(ushort));
+
   // Build the index buffer and copy the data
   _triangles.create();
   _triangles.bind();
-  _triangles.allocate(meshData->triangles(), 3 * sizeof(ushort));
+  _triangles.allocate(meshData->vertices(), 3 * sizeof(real_t));
 
   // Create the attributes
   _attributes = new Attribute*[_nAttributes];
   MeshData::Attribute * const* attributes = meshData->attributes();
-  for(int i = 0; i < _nAttributes; ++i) {
+  for(uint i = 0; i < _nAttributes; ++i) {
     _attributes[i] = new Attribute(*(attributes[i]), _nVertices);
   }
 }
@@ -182,9 +167,15 @@ Mesh::Mesh(const MeshData *meshData) :
 void Mesh::draw(QGLShaderProgram *shaderProgram)
 {
   // Bind the attributes
-  for(int i = 0; i < _nAttributes; ++i) {
+  for(uint i = 0; i < _nAttributes; ++i) {
     _attributes[i]->bind(shaderProgram);
   }
+
+  // Bind the vertex position attribute
+  // TODO: The "a_Position" name shouldn't be hard coded
+  _vertices.bind();
+  shaderProgram->enableAttributeArray("a_Position");
+  shaderProgram->setAttributeBuffer("a_Position", REAL_GL, 0, 3, 0);
 
   // Draw the elements
   _triangles.bind();

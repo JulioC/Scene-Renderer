@@ -11,6 +11,7 @@
 #define MESH_MAX_ATTRIBUTES 16
 
 typedef float real_t;
+#define REAL_GL GL_FLOAT
 
 class MeshData
 {
@@ -68,6 +69,8 @@ public:
   inline uint nVertices() const { return _nVertices; }
   inline uint nTriangles() const { return _nTriangles; }
 
+  inline real_t* vertices() const { return _vertices; }
+
   inline uint nAttributes() const { return _nAttributes; }
   inline Attribute* const* attributes() const { return _attributes; }
 
@@ -78,8 +81,7 @@ public:
                    size_t dataSize,
                    uint nComponents = 4);
 
-  bool setPosition(uint vertexId, real_t x, real_t y, real_t z, real_t w = 1.0);
-  bool setNormal(uint vertexId, real_t x, real_t y, real_t z, real_t w = 0.0);
+  bool setVertex(uint vertexId, real_t x, real_t y, real_t z);
   bool setAttribute(uint vertexId, uint attributeId, const void* data);
 
   void calcNormals();
@@ -88,8 +90,7 @@ protected:
   uint _nVertices;
   uint _nTriangles;
 
-  float *_vPosition;
-  float *_vNormal;
+  real_t *_vertices;
 
   uint _nAttributes;
   Attribute *_attributes[MESH_MAX_ATTRIBUTES];
@@ -134,6 +135,7 @@ protected:
   uint _nAttributes;
   Attribute **_attributes;
 
+  QGLBuffer _vertices;
   QGLBuffer _triangles;
 
 private:
