@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include <QVector3D>
+
 MeshData::Attribute::Attribute(uint nVertices,
                                const char* identifier,
                                DataType dataType,
@@ -45,7 +47,7 @@ MeshData::MeshData(uint nVertices, uint nTriangles) :
 {
   // Allocate space for vertex data and triangles
   _vertices = new real_t[nVertices * 3];
-  _triangles = new uint[nTriangles * 3];
+  _triangles = new ushort[nTriangles * 3];
 }
 
 MeshData::~MeshData()
@@ -105,7 +107,7 @@ bool MeshData::setAttribute(uint vertexId, uint attributeId, const void *data)
   return true;
 }
 
-bool MeshData::setTriangle(uint triangleId, uint a, uint b, uint c)
+bool MeshData::setTriangle(uint triangleId, ushort a, ushort b, ushort c)
 {
   // Check if is valid triangle
   if(!(triangleId < _nTriangles)) {
@@ -119,6 +121,87 @@ bool MeshData::setTriangle(uint triangleId, uint a, uint b, uint c)
   _triangles[offset + 2] = c;
 
   return true;
+}
+
+void MeshData::normalize(real_t size)
+{
+  QVector3D vmin(0, 0, 0);
+  QVector3D vmax(0, 0, 0);
+
+  float min, max;
+  min = max = 0.0;
+
+  QVector3D *vertices = (QVector3D*)_vertices;
+
+  // Get the min and max values from the vertex values
+  for(uint i = 0; i < _nVertices; i++) {
+    if(vertices[i].x() < vmin.x()) { vmin.setX(vertices[i].x()); }
+    if(vertices[i].y() < vmin.y()) { vmin.setY(vertices[i].y()); }
+    if(vertices[i].z() < vmin.z()) { vmin.setZ(vertices[i].z()); }
+
+    if(vertices[i].x() > vmax.x()) { vmax.setX(vertices[i].x()); }
+    if(vertices[i].y() > vmax.y()) { vmax.setY(vertices[i].y()); }
+    if(vertices[i].z() > vmax.z()) { vmax.setZ(vertices[i].z()); }
+
+    if(vertices[i].length() < min) { min = vertices[i].length(); }
+    if(vertices[i].length() > max) { max = vertices[i].length(); }
+  }
+
+  // Calcule the center and delta coef
+  float deltainv = size / (max - min);
+  QVector3D center =  (vmin + (vmax - vmin) / 2.0) * deltainv;
+
+  // Apply the changes
+  for(uint i = 0; i < _nVertices; ++i) {
+    vertices[i] = vertices[i] * deltainv - center;
+  }
+}
+
+void MeshData::calculeNormals(bool weighted, const char *identifier)
+{
+  // Zero the number of references for each vertex
+  uint *count = new uint[_nVertices];
+  memset(count, 0, _nVertices * sizeof(uint));
+
+  QVector3D *vertices = (QVector3D*)_vertices;
+
+  // Get the sum of vertex normals
+  QVector3D *vNormals = new QVector3D[_nVertices];
+  for(uint i = 0; i < _nTriangles; ++i) {
+    int offset = i * 3;
+    ushort elements[] = {
+      _triangles[offset],
+      _triangles[offset + 1],
+      _triangles[offset + 2]
+    };
+
+    // Calculate the triangle (doubled) area
+    QVector3D a = vertices[elements[0]] - vertices[elements[2]];
+    QVector3D b = vertices[elements[1]] - vertices[elements[2]];
+    QVector3D area = QVector3D::crossProduct(a, b);
+    if(!weighted) {
+      area.normalize();
+    }
+
+    // Store the normal to each vertex in triangle
+    for(int j = 0; j < 3; j++) {
+      vNormals[elements[j]] += area;
+      ++count[elements[j]];
+    }
+  }
+
+  // Register the normal attribute
+  int attribute = regAttribute(identifier, (DataType)REAL_GL, sizeof(real_t), 3);
+
+  // Store the normals on the attribute
+  for(uint i = 0; i < _nVertices; ++i) {
+    vNormals[i] /= count[i];
+    vNormals[i].normalize();
+    setAttribute(i, attribute, &(vNormals[i]));
+  }
+
+  delete[] vNormals;
+  delete[] count;
 }
 
 Mesh::Attribute::Attribute(const MeshData::Attribute &attribute, uint nVertices) :
@@ -154,38 +237,47 @@ void Mesh::Attribute::bind(QGLShaderProgram *shaderProgram)
   shaderProgram->setAttributeBuffer(_identifier, _dataType, 0, _nComponents, 0);
 }
 
-Mesh::Mesh(const MeshData *meshData) :
+Mesh::Mesh(const MeshData *meshData, const char* vIdentifier) :
+  _vIdentifier(NULL),
   _nVertices(meshData->nVertices()),
-  _nTriangles(meshData->nVertices()),
+  _nTriangles(meshData->nTriangles()),
   _nAttributes(meshData->nAttributes()),
   _attributes(NULL),
   _vertices(QGLBuffer::VertexBuffer),
   _triangles(QGLBuffer::IndexBuffer)
 {
+  // Create a local copy of the vertex identifier
+  _vIdentifier = new char[strlen(vIdentifier) + 1];
+  strcpy(_vIdentifier, vIdentifier);
+
   // Build the vertex buffer and copy the data
   _vertices.create();
   _vertices.bind();
-  _vertices.allocate(meshData->triangles(), 3 * sizeof(ushort));
+  _vertices.allocate(meshData->vertices(), 3 * _nVertices * sizeof(real_t));
 
   // Build the index buffer and copy the data
   _triangles.create();
   _triangles.bind();
-  _triangles.allocate(meshData->vertices(), 3 * sizeof(real_t));
+  _triangles.allocate(meshData->triangles(), 3 * _nTriangles * sizeof(ushort));
 
   // Create the attributes
-  _attributes = new Attribute*[_nAttributes];
-  MeshData::Attribute * const* attributes = meshData->attributes();
-  for(uint i = 0; i < _nAttributes; ++i) {
-    _attributes[i] = new Attribute(*(attributes[i]), _nVertices);
+  if(_nAttributes > 0) {
+    _attributes = new Attribute*[_nAttributes];
+    MeshData::Attribute * const* attributes = meshData->attributes();
+    for(uint i = 0; i < _nAttributes; ++i) {
+      _attributes[i] = new Attribute(*(attributes[i]), _nVertices);
+    }
   }
 }
 
 Mesh::~Mesh()
 {
-  for(uint i = 0; i < _nAttributes; ++i) {
-    delete _attributes[i];
+  if(_attributes) {
+    for(uint i = 0; i < _nAttributes; ++i) {
+      delete _attributes[i];
+    }
+    delete[] _attributes;
   }
-  delete[] _attributes;
 
   // Clean up the buffers
   _triangles.destroy();
@@ -201,13 +293,12 @@ void Mesh::draw(QGLShaderProgram *shaderProgram)
   }
 
   // Bind the vertex position attribute
-  // TODO: The "a_Position" name shouldn't be hard coded
   _vertices.bind();
-  shaderProgram->enableAttributeArray("a_Position");
-  shaderProgram->setAttributeBuffer("a_Position", REAL_GL, 0, 3, 0);
+  shaderProgram->enableAttributeArray(_vIdentifier);
+  shaderProgram->setAttributeBuffer(_vIdentifier, REAL_GL, 0, 3, 0);
 
   // Draw the elements
   _triangles.bind();
-  glDrawElements(GL_TRIANGLES, _nTriangles, GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLES, _nTriangles * 3, GL_UNSIGNED_SHORT, 0);
 }
 

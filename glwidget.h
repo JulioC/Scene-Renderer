@@ -34,7 +34,6 @@ public:
   void loadOFF(const char* filename);
 
   void renderMode(RenderMode mode);
-  void backfaceCulling(bool enabled);
 
   void setProjection(ProjectionMode mode);
   bool setShaders(const char* vshader, const char* fshader);

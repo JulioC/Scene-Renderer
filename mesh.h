@@ -69,12 +69,12 @@ public:
   inline uint nVertices() const { return _nVertices; }
   inline uint nTriangles() const { return _nTriangles; }
 
-  inline real_t* vertices() const { return _vertices; }
+  inline const real_t* vertices() const { return _vertices; }
 
   inline uint nAttributes() const { return _nAttributes; }
   inline Attribute* const* attributes() const { return _attributes; }
 
-  inline const uint* triangles() const { return _triangles; }
+  inline const ushort* triangles() const { return _triangles; }
 
   int regAttribute(const char* identifier,
                    DataType dataType,
@@ -84,9 +84,10 @@ public:
   bool setVertex(uint vertexId, real_t x, real_t y, real_t z);
   bool setAttribute(uint vertexId, uint attributeId, const void* data);
 
-  bool setTriangle(uint triangleId, uint a, uint b, uint c);
+  bool setTriangle(uint triangleId, ushort a, ushort b, ushort c);
 
-  void calcNormals();
+  void normalize(real_t size = 1.0);
+  void calculeNormals(bool weighted = false, const char* identifier = "a_Normal");
 
 protected:
   uint _nVertices;
@@ -97,7 +98,7 @@ protected:
   uint _nAttributes;
   Attribute *_attributes[MESH_MAX_ATTRIBUTES];
 
-  uint *_triangles;
+  ushort *_triangles;
 
 private:
   MeshData(MeshData &);
@@ -125,12 +126,14 @@ protected:
   };
 
 public:
-  Mesh(const MeshData *meshData);
+  Mesh(const MeshData *meshData, const char* vIdentifier = "a_Position");
   virtual ~Mesh();
 
   virtual void draw(QGLShaderProgram *shaderProgram);
 
 protected:
+  char* _vIdentifier;
+
   uint _nVertices;
   uint _nTriangles;
 

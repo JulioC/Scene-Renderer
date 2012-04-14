@@ -70,10 +70,14 @@ void GLWidget::loadOFF(const char *filename) {
     return;
   }
 
+  meshData->normalize();
+  meshData->calculeNormals();
+
   if(_mesh) {
     delete _mesh;
   }
   _mesh = new Mesh(meshData);
+  delete meshData;
 }
 
 void GLWidget::renderMode(RenderMode mode) {
@@ -93,23 +97,15 @@ void GLWidget::renderMode(RenderMode mode) {
   glPolygonMode(GL_FRONT, glmode);
 }
 
-void GLWidget::backfaceCulling(bool enabled) {
-  if(enabled) {
-    glEnable(GL_CULL_FACE);
-  }
-  else {
-    glDisable(GL_CULL_FACE);
-  }
-}
-
 void GLWidget::initializeGL() {
   glClearColor(.2, .2, .6, 1.0);
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 
-  setShaders(":/vshader.glsl", ":/fshader.glsl");
+  setShaders(":/shaders/vshader.glsl", ":/shaders/fshader.glsl");
 
-  loadOFF("/home/julio/CG/Projeto2/models/elk.off");
+  loadOFF("/home/julio/CG/Projeto2/models/homer.off");
   //loadModel("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
 }
 
