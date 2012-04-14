@@ -53,6 +53,10 @@ public:
     size_t _size;
 
     char* _data;
+
+  private:
+    Attribute(Attribute &);
+    Attribute& operator=(Attribute &);
   };
 
 public:
@@ -89,6 +93,10 @@ protected:
   Attribute *_attributes[MESH_MAX_ATTRIBUTES];
 
   uint *_triangles;
+
+private:
+  MeshData(MeshData &);
+  MeshData& operator=(MeshData &);
 };
 
 class Mesh {
@@ -105,6 +113,10 @@ protected:
     GLenum _dataType;
     uint _nComponents;
     QGLBuffer _buffer;
+
+  private:
+    Attribute(Attribute &);
+    Attribute& operator=(Attribute &);
   };
 
 public:
@@ -121,6 +133,10 @@ protected:
   Attribute **_attributes;
 
   QGLBuffer _triangles;
+
+private:
+  Mesh(Mesh &);
+  Mesh& operator=(Mesh &);
 };
 
 #endif // MESH_H

@@ -12,6 +12,8 @@ public:
   static MeshData* load(const char *filename);
   static MeshData* load(std::istream &input);
 
+private:
+  MeshLoader();
 };
 
 #endif // MESHLOADER_H
