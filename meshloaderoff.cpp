@@ -39,7 +39,7 @@ MeshData* MeshLoaderOFF::load(std::istream &input)
     std::cerr << "Parse error at line " << lineNumber << std::endl;
   }
   std::istringstream countstream(line);
-  countstream >> nVertices >> std::ws >> nFaces;
+  countstream >> nVertices >> nFaces;
 
   MeshData* meshData = new MeshData(nVertices, nFaces);
 
@@ -54,7 +54,7 @@ MeshData* MeshLoaderOFF::load(std::istream &input)
 
     real_t x, y, z;
     std::istringstream linestream(line);
-    linestream >> x >> std::ws >> y >> std::ws >> z;
+    linestream >> x >> y >> z;
 
     meshData->setVertex(i, x, y, z);
   }
@@ -70,7 +70,7 @@ MeshData* MeshLoaderOFF::load(std::istream &input)
 
     uint count, a, b, c;
     std::istringstream linestream(line);
-    linestream >> count >> std::ws >> a >> std::ws >> b >> std::ws >> c;
+    linestream >> count >> a >> b >> c;
     if(count != 3) {
       std::cerr << "Invalid face at line " << lineNumber << std::endl;
       delete meshData;
