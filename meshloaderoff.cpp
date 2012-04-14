@@ -28,7 +28,7 @@ MeshData* MeshLoaderOFF::load(std::istream &input)
     return NULL;
   }
   if((magic[0] != 'O') || (magic[1] != 'F') || (magic[2] != 'F')) {
-    std::cerr << "Invalid magic word (found " << magic[0] << magic[1] << magic[2] << ") at line " << lineNumber << std::endl;
+    std::cerr << "Invalid magic word (" << magic[0] << magic[1] << magic[2] << ") at line " << lineNumber << std::endl;
     return NULL;
   }
 
