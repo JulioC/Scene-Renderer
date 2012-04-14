@@ -2,14 +2,19 @@
 #define MESH_H
 
 #include <stdlib.h>
+
 #include <GL/gl.h>
+
+#include <QGLBuffer>
+#include <QGLShaderProgram>
 
 #define MESH_MAX_ATTRIBUTES 16
 
 class MeshData
 {
 public:
-  enum DataType {
+  enum DataType
+  {
     Byte = GL_BYTE,
     UnsignedByte = GL_UNSIGNED_BYTE,
     Short = GL_SHORT,
@@ -20,7 +25,6 @@ public:
     Double = GL_DOUBLE
   };
 
-protected:
   class Attribute
   {
   public:
@@ -41,7 +45,7 @@ protected:
     void set(uint vertexId, const void *data);
 
   protected:
-    const char *_identifier;
+    char *_identifier;
     DataType _dataType;
     size_t _dataSize;
     uint _nComponents;
@@ -52,10 +56,16 @@ protected:
   };
 
 public:
-  MeshData(const char* identifier, uint nVertices, uint nTriangles);
+  MeshData(uint nVertices, uint nTriangles);
   ~MeshData();
 
-  const char* identifier() const { return _identifier; }
+  inline uint nVertices() const { return _nVertices; }
+  inline uint nTriangles() const { return _nTriangles; }
+
+  inline uint nAttributes() const { return _nAttributes; }
+  inline Attribute* const* attributes() const { return _attributes; }
+
+  inline const uint* triangles() const { return _triangles; }
 
   int regAttribute(const char* identifier,
                    DataType dataType,
@@ -66,16 +76,51 @@ public:
   bool setNormal(uint vertexId, float x, float y, float z, float w = 0.0);
   bool setAttribute(uint vertexId, uint attributeId, const void* data);
 
+  void calcNormals();
+
 protected:
-  const char *_identifier;
   uint _nVertices;
   uint _nTriangles;
 
   float *_vPosition;
   float *_vNormal;
-  Attribute *_vAttributes[MESH_MAX_ATTRIBUTES];
+
+  uint _nAttributes;
+  Attribute *_attributes[MESH_MAX_ATTRIBUTES];
 
   uint *_triangles;
+};
+
+class Mesh {
+protected:
+  class Attribute {
+  public:
+    Attribute(const MeshData::Attribute &attribute, uint nVertices);
+    ~Attribute();
+
+    void bind(QGLShaderProgram *shaderProgram);
+
+  protected:
+    char *_identifier;
+    GLenum _dataType;
+    uint _nComponents;
+    QGLBuffer _buffer;
+  };
+
+public:
+  Mesh(const MeshData *meshData);
+  ~Mesh();
+
+  virtual void draw(QGLShaderProgram *shaderProgram);
+
+protected:
+  uint _nVertices;
+  uint _nTriangles;
+
+  uint _nAttributes;
+  Attribute **_attributes;
+
+  QGLBuffer _triangles;
 };
 
 #endif // MESH_H

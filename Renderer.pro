@@ -1,6 +1,4 @@
-TEMPLATE = app
-CONFIG += console
-CONFIG -= qt
+QT += core gui opengl
 
 SOURCES += main.cpp \
     meshloaderobj.cpp \
