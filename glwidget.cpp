@@ -103,7 +103,7 @@ void GLWidget::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  setShaders(":/shaders/vshader.glsl", ":/shaders/fshader.glsl");
+  setShaders(":/shaders/phong/vshader.glsl", ":/shaders/phong/fshader.glsl");
 
   loadOFF("/home/julio/CG/Projeto2/models/homer.off");
   //loadModel("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
