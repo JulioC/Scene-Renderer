@@ -1,12 +1,12 @@
 QT += core gui opengl
 
 SOURCES += main.cpp \
-    meshloaderobj.cpp \
+    mesh.cpp \
     meshloader.cpp \
-    mesh.cpp
+    meshloaderoff.cpp
 
 HEADERS += \
-    meshloaderobj.h \
+    mesh.h \
     meshloader.h \
-    mesh.h
+    meshloaderoff.h
 

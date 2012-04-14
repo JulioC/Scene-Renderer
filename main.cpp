@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "meshloaderobj.h"
+#include "meshloaderoff.h"
 
 using namespace std;
 
