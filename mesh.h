@@ -21,8 +21,8 @@ protected:
   class Attribute
   {
   public:
-    Attribute(uint count,
-              const char* identifier,
+    Attribute(uint vertices,
+              const char *identifier,
               DataType dataType,
               size_t dataSize,
               uint components = 4);
@@ -33,15 +33,19 @@ protected:
     inline size_t dataSize() const { return _dataSize; }
     inline uint components() const { return _components; }
 
-    bool set(uint vertexId, const void* data);
+    inline const void* data() const { return _data; };
+
+    void set(uint vertexId, const void *data);
 
   protected:
-    const char* _identifier;
+    const char *_identifier;
     DataType _dataType;
     size_t _dataSize;
     uint _components;
 
-    void* _data;
+    size_t _size;
+
+    char* _data;
   };
 
 public:
