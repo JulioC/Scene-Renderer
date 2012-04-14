@@ -5,6 +5,12 @@
 #include <sstream>
 #include <string>
 
+MeshData* MeshLoaderOFF::load(const char *filename)
+{
+  std::fstream stream(filename, std::fstream::in);
+  return load(stream);
+}
+
 MeshData* MeshLoaderOFF::load(std::istream &input)
 {
   int lineNumber = 0;

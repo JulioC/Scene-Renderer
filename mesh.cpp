@@ -180,6 +180,19 @@ Mesh::Mesh(const MeshData *meshData) :
   }
 }
 
+Mesh::~Mesh()
+{
+  for(uint i = 0; i < _nAttributes; ++i) {
+    delete _attributes[i];
+  }
+  delete[] _attributes;
+
+  // Clean up the buffers
+  _triangles.destroy();
+  _vertices.destroy();
+
+}
+
 void Mesh::draw(QGLShaderProgram *shaderProgram)
 {
   // Bind the attributes

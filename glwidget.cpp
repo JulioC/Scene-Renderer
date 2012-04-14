@@ -158,8 +158,8 @@ void GLWidget::paintGL() {
   _shaderProgram->setUniformValue("ModelViewProjectionMatrix", mvproj);
   _shaderProgram->setUniformValue("NormalMatrix", mview.normalMatrix());
 
-  if(_model) {
-    _model->draw(_shaderProgram);
+  if(_mesh) {
+    _mesh->draw(_shaderProgram);
   }
 }
 

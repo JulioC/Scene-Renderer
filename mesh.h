@@ -126,7 +126,7 @@ protected:
 
 public:
   Mesh(const MeshData *meshData);
-  ~Mesh();
+  virtual ~Mesh();
 
   virtual void draw(QGLShaderProgram *shaderProgram);
 
@@ -141,6 +141,7 @@ protected:
   QGLBuffer _triangles;
 
 private:
+  Mesh();
   Mesh(Mesh &);
   Mesh& operator=(Mesh &);
 };

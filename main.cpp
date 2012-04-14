@@ -1,10 +1,11 @@
-#include <iostream>
+#include <QApplication>
 
-#include "meshloaderoff.h"
+#include "mainwindow.h"
 
-using namespace std;
-
-int main() {
-  return 0;
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  MainWindow window;
+  window.show();
+  return app.exec();
 }
 

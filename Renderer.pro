@@ -2,17 +2,20 @@ QT += core gui opengl
 
 SOURCES += main.cpp \
     mesh.cpp \
-    meshloader.cpp \
     meshloaderoff.cpp \
     glwidget.cpp \
     trackball.cpp \
-    camera.cpp
+    camera.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     mesh.h \
-    meshloader.h \
     meshloaderoff.h \
     glwidget.h \
     trackball.h \
-    camera.h
+    camera.h \
+    mainwindow.h
+
+FORMS += \
+    mainwindow.ui
 
