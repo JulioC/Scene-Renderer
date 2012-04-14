@@ -10,6 +10,8 @@
 
 #define MESH_MAX_ATTRIBUTES 16
 
+typedef float real_t;
+
 class MeshData
 {
 public:
@@ -76,8 +78,8 @@ public:
                    size_t dataSize,
                    uint nComponents = 4);
 
-  bool setPosition(uint vertexId, float x, float y, float z, float w = 1.0);
-  bool setNormal(uint vertexId, float x, float y, float z, float w = 0.0);
+  bool setPosition(uint vertexId, real_t x, real_t y, real_t z, real_t w = 1.0);
+  bool setNormal(uint vertexId, real_t x, real_t y, real_t z, real_t w = 0.0);
   bool setAttribute(uint vertexId, uint attributeId, const void* data);
 
   void calcNormals();

@@ -45,8 +45,8 @@ MeshData::MeshData(uint nVertices, uint nTriangles) :
   _triangles(NULL)
 {
   // Allocate space for vertex data and triangles
-  _vPosition = new float[nVertices * 4];
-  _vNormal = new float[nVertices * 4];
+  _vPosition = new real_t[nVertices * 4];
+  _vNormal = new real_t[nVertices * 4];
   _triangles = new uint[nTriangles * 3];
 }
 
@@ -79,7 +79,7 @@ int MeshData::regAttribute(const char* identifier,
   return index;
 }
 
-bool MeshData::setPosition(uint vertexId, float x, float y, float z, float w)
+bool MeshData::setPosition(uint vertexId, real_t x, real_t y, real_t z, real_t w)
 {
   // Check if is valid vertex
   if(!(vertexId < _nVertices)) {
@@ -96,7 +96,7 @@ bool MeshData::setPosition(uint vertexId, float x, float y, float z, float w)
   return true;
 }
 
-bool MeshData::setNormal(uint vertexId, float x, float y, float z, float w)
+bool MeshData::setNormal(uint vertexId, real_t x, real_t y, real_t z, real_t w)
 {
   // Check if is valid vertex
   if(!(vertexId < _nVertices)) {
