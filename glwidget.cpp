@@ -124,8 +124,8 @@ void GLWidget::initializeGL() {
   setShaders(":/shaders/phong/vshader.glsl", ":/shaders/phong/fshader.glsl");
 
   //loadOFF("/home/julio/CG/Projeto2/models/homer.off");
-  //loadPLY("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
-  loadPLY("/home/julio/CG/Modelos/bunny/reconstruction/bun_zipper.ply");
+  loadPLY("/home/julio/CG/Modelos/dragon_recon/dragon_vrip_res3.ply");
+  //loadPLY("/home/julio/CG/Modelos/bunny/reconstruction/bun_zipper.ply");
 }
 
 void GLWidget::paintGL() {

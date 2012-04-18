@@ -7,7 +7,9 @@ SOURCES += main.cpp \
     trackball.cpp \
     camera.cpp \
     mainwindow.cpp \
-    meshloaderply.cpp
+    meshloaderply.cpp \
+    scene.cpp \
+    light.cpp
 
 HEADERS += \
     mesh.h \
@@ -16,7 +18,9 @@ HEADERS += \
     trackball.h \
     camera.h \
     mainwindow.h \
-    meshloaderply.h
+    meshloaderply.h \
+    scene.h \
+    light.h
 
 FORMS += \
     mainwindow.ui
