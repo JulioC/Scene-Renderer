@@ -23,20 +23,32 @@ public:
 
   void clearState();
 
-  bool getMouseButtonState(MouseButton button);
-  void setMouseButtonState(MouseButton button, bool state);
+  void update();
 
-  bool getModifierButtonState(ModifierButton modifier);
-  void setModifierButtonState(ModifierButton button, bool state);
+  bool modifier(ModifierButton button);
+  void modifier(ModifierButton button, bool state);
 
-  QPointF getMousePosition();
-  void setMousePosition(const QPointF &positions);
+  bool mouseButton(MouseButton button);
+  void mouseButton(MouseButton button, bool state);
+
+  bool mouseButtonPressed(MouseButton button);
+  bool mouseButtonDown(MouseButton button);
+  bool mouseButtonUp(MouseButton button);
+
+  QPointF mousePosition();
+  void mousePosition(const QPointF &position);
+
+  QPointF mouseMotion();
 
 private:
-  uint _mouseState;
   uint _modifierState;
 
+  uint _mouseState;
+  uint _prevMouseState;
+
   QPointF _mousePosition;
+  QPointF _prevMousePosition;
+
 };
 
 #endif // INPUTSTATE_H
