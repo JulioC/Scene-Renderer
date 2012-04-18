@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     scene.cpp \
     light.cpp \
     inputstate.cpp \
-    object.cpp
+    object.cpp \
+    material.cpp
 
 HEADERS += \
     mesh.h \
@@ -24,7 +25,8 @@ HEADERS += \
     scene.h \
     light.h \
     inputstate.h \
-    object.h
+    object.h \
+    material.h
 
 FORMS += \
     mainwindow.ui

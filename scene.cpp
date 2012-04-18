@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include <QGLShaderProgram>
+
 #include "light.h"
 #include "object.h"
 
@@ -76,7 +78,12 @@ void Scene::addLight(Light *light)
 void Scene::applyLights(QGLShaderProgram *shaderProgram)
 {
   int count = _lights.size();
+
+  shaderProgram->setUniformValue("NumLights", count);
+
+  char *buffer = new char[32];
   for(int i = 0; i < count; ++i) {
-    _lights.at(i)->apply(shaderProgram, i);
+    sprintf(buffer, "Lights[%d]", i);
+    _lights.at(i)->apply(shaderProgram, buffer);
   }
 }

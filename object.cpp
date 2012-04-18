@@ -23,7 +23,18 @@ void Object::update(const InputState &state)
 
 void Object::draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection, const QMatrix4x4 &view)
 {
-  // Bind matrices
+  QMatrix4x4 model, mview, mvproj;
+
+  model.setToIdentity();
+  mview = view * model;
+  mvproj = projection * mview;
+
+  shaderProgram->setUniformValue("ModelMatrix", model);
+  shaderProgram->setUniformValue("ViewMatrix", view);
+  shaderProgram->setUniformValue("ProjectionMatrix", projection);
+  shaderProgram->setUniformValue("ModelViewMatrix", mview);
+  shaderProgram->setUniformValue("ModelViewProjectionMatrix", mvproj);
+  shaderProgram->setUniformValue("NormalMatrix", mview.normalMatrix());
 
   _mesh->draw(shaderProgram);
 }
