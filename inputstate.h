@@ -25,20 +25,20 @@ public:
 
   void update();
 
-  bool modifier(ModifierButton button);
+  bool modifier(ModifierButton button) const;
   void modifier(ModifierButton button, bool state);
 
-  bool mouseButton(MouseButton button);
+  bool mouseButton(MouseButton button) const;
   void mouseButton(MouseButton button, bool state);
 
-  bool mouseButtonPressed(MouseButton button);
-  bool mouseButtonDown(MouseButton button);
-  bool mouseButtonUp(MouseButton button);
+  bool mousePressed(MouseButton button) const;
+  bool mouseDown(MouseButton button) const;
+  bool mouseUp(MouseButton button) const;
 
-  QPointF mousePosition();
+  QPointF mousePosition() const;
   void mousePosition(const QPointF &position);
 
-  QPointF mouseMotion();
+  QPointF mouseMotion() const;
 
 private:
   uint _modifierState;

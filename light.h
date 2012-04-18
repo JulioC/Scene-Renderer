@@ -1,15 +1,17 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+
+
 class QGLShaderProgram;
 
 class Light
 {
 public:
-  Light(insity, position);
-  virtual Light();
+  Light();
+  virtual ~Light();
 
-  virtual apply(QGLShaderProgram *shaderProgram);
+  virtual void apply(QGLShaderProgram *shaderProgram, int id);
 };
 
 #endif // LIGHT_H

@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     meshloaderply.cpp \
     scene.cpp \
     light.cpp \
-    inputstate.cpp
+    inputstate.cpp \
+    object.cpp
 
 HEADERS += \
     mesh.h \
@@ -22,7 +23,8 @@ HEADERS += \
     meshloaderply.h \
     scene.h \
     light.h \
-    inputstate.h
+    inputstate.h \
+    object.h
 
 FORMS += \
     mainwindow.ui

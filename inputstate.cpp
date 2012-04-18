@@ -1,9 +1,11 @@
 #include "inputstate.h"
 
 InputState::InputState() :
-  _mouseState(0),
   _modifierState(0),
-  _mousePosition(0, 0)
+  _mouseState(0),
+  _prevMouseState(0),
+  _mousePosition(0, 0),
+  _prevMousePosition(0, 0)
 {
 }
 
@@ -20,7 +22,7 @@ void InputState::update()
   _prevMousePosition = _mousePosition;
 }
 
-bool InputState::modifier(ModifierButton button)
+bool InputState::modifier(ModifierButton button) const
 {
   return (_mouseState & button);
 }
@@ -35,7 +37,7 @@ void InputState::modifier(ModifierButton button, bool state)
   }
 }
 
-bool InputState::mouseButton(MouseButton button)
+bool InputState::mouseButton(MouseButton button) const
 {
   return (_mouseState & button);
 }
@@ -50,22 +52,22 @@ void InputState::mouseButton(MouseButton button, bool state)
   }
 }
 
-bool InputState::mouseButtonPressed(MouseButton button)
+bool InputState::mousePressed(MouseButton button) const
 {
   return (_mouseState & button) && !(_prevMouseState & button);
 }
 
-bool InputState::mouseButtonDown(MouseButton button)
+bool InputState::mouseDown(MouseButton button) const
 {
   return (_mouseState & button);
 }
 
-bool InputState::mouseButtonUp(MouseButton button)
+bool InputState::mouseUp(MouseButton button) const
 {
   return !(_mouseState & button);
 }
 
-QPointF InputState::mousePosition()
+QPointF InputState::mousePosition() const
 {
   return _mousePosition;
 }
@@ -75,7 +77,7 @@ void InputState::mousePosition(const QPointF &position)
   _mousePosition = position;
 }
 
-QPointF InputState::mouseMotion()
+QPointF InputState::mouseMotion() const
 {
   return _mousePosition - _prevMousePosition;
 }
