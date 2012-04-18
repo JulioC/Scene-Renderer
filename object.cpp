@@ -2,19 +2,38 @@
 
 #include <QGLShaderProgram>
 
+#include "material.h"
 #include "mesh.h"
+#include "texture.h"
 
-Object::Object(Mesh *mesh, QGLShaderProgram *shaderProgram):
+Object::Object(Mesh *mesh, QGLShaderProgram *shaderProgram, Material *material):
   _shaderProgram(shaderProgram),
-  _mesh(mesh)
+  _mesh(mesh),
+  _material(material),
+  _textures()
 {
-
 }
 
 Object::~Object()
 {
   delete _shaderProgram;
   delete _mesh;
+  if(_material) {
+    delete _material;
+  }
+
+  for(int i = 0, s = _textures.size(); i < s; ++i) {
+    TexPair pair = _textures.at(i);
+    delete[] pair.first;
+    delete pair.second;
+  }
+}
+
+void Object::addTexture(Texture *texture, const char *identifier)
+{
+  char *buffer = new char[strlen(identifier) + 1];
+  strcpy(buffer, identifier);
+  _textures.append(TexPair(buffer, texture));
 }
 
 void Object::update(const InputState &state)
@@ -36,21 +55,19 @@ void Object::draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection,
   shaderProgram->setUniformValue("ModelViewProjectionMatrix", mvproj);
   shaderProgram->setUniformValue("NormalMatrix", mview.normalMatrix());
 
+  for(int i = 0, s = _textures.size(); i < s; ++i) {
+    TexPair pair = _textures.at(i);
+    pair.second->bind(shaderProgram, pair.first);
+  }
+
+  _material->apply(shaderProgram, "Material");
+
   _mesh->draw(shaderProgram);
 }
 
 QGLShaderProgram* Object::shaderProgram()
 {
   return _shaderProgram;
-}
-
-void Object::shaderProgram(QGLShaderProgram *shaderProgram)
-{
-  if(_shaderProgram) {
-    delete _shaderProgram;
-  }
-
-  _shaderProgram = shaderProgram;
 }
 
 

@@ -10,7 +10,7 @@ class Material
 public:
   Material(const QVector4D &a, const QVector4D &d, const QVector4D &s);
 
-  virtual void apply(QGLShaderProgram *shaderProgram, const char *identifier);
+  void apply(QGLShaderProgram *shaderProgram, const char *identifier);
 
   QVector4D ambient;
   QVector4D diffuse;

@@ -2,16 +2,12 @@
 #define GLWIDGET_H
 
 #include <QMouseEvent>
+#include <QTimer>
 #include <QGLWidget>
-#include <QMatrix4x4>
 
-#include "camera.h"
-#include "trackball.h"
+#include "inputstate.h"
 
-class QGLShader;
-class QGLShaderProgram;
-
-class Mesh;
+class Scene;
 
 class GLWidget : public QGLWidget {
   Q_OBJECT
@@ -23,60 +19,22 @@ public:
     Solid
   };
 
-  enum ProjectionMode {
-    Perspective,
-    Orthogonal
-  };
-
   explicit GLWidget(QWidget *parent = 0);
   virtual ~GLWidget();
 
-  void loadPLY(const char* filename);
-  void loadOFF(const char* filename);
+  void loadScene(const char* filename);
 
   void renderMode(RenderMode mode);
-
-  void setProjection(ProjectionMode mode);
-  bool setShaders(const char* vshader, const char* fshader);
-
-  void centerView();
 
 public slots:
   void animate();
 
 protected:
-  typedef struct {
-    QVector4D ambient;
-    QVector4D diffuse;
-    QVector4D specular;
-    float shininess;
-  } tMaterial;
+  QTimer _qtimer;
 
-  typedef struct {
-    QVector4D position;
-    tMaterial material;
-  } tLight;
+  InputState _inputState;
 
-  QTimer *_qtimer;
-
-  // Shaders, materials and mesh should be in an "object" class
-
-  QGLShader *_vertShader;
-  QGLShader *_fragShader;
-  QGLShaderProgram *_shaderProgram;
-
-  tMaterial _material;
-  tLight _light;
-
-  Mesh *_mesh;
-
-  Trackball _trackball;
-  Trackball _lightTrackball;
-  Camera _camera;
-
-  ProjectionMode _projectionMode;
-
-  QMatrix4x4 _projection;
+  Scene *_scene;
 
   void initializeGL();
   void paintGL();
@@ -85,7 +43,6 @@ protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
   void mouseMoveEvent(QMouseEvent* event);
-  void wheelEvent(QWheelEvent* event);
 
   void rebuildProjection();
 
