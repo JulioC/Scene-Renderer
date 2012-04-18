@@ -5,9 +5,9 @@
 
 #include <QGLShaderProgram>
 
-Light::Light(const QVector3D &position, const Material &material):
-  _position(position),
-  _material(material)
+Light::Light(const QVector3D &p, const QVector4D &b):
+  position(p),
+  brightness(b)
 {
 }
 
@@ -20,10 +20,10 @@ void Light::apply(QGLShaderProgram *shaderProgram, const char *identifier)
   char *buffer = new char[strlen(identifier) + 16];
 
   sprintf(buffer, "%s.position", identifier);
-  shaderProgram->setUniformValue(identifier, _position);
+  shaderProgram->setUniformValue(identifier, position);
 
-  sprintf(buffer, "%s.material", identifier);
-  _material.apply(shaderProgram, buffer);
+  sprintf(buffer, "%s.brightness", identifier);
+  shaderProgram->setUniformValue(identifier, brightness);
 
   delete[] buffer;
 }

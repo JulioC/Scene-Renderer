@@ -26,7 +26,6 @@ protected:
   QGLShaderProgram *_shaderProgram;
 
   Mesh *_mesh;
-
 };
 
 #endif // OBJECT_H

@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     light.cpp \
     inputstate.cpp \
     object.cpp \
-    material.cpp
+    material.cpp \
+    texture.cpp
 
 HEADERS += \
     mesh.h \
@@ -26,7 +27,8 @@ HEADERS += \
     light.h \
     inputstate.h \
     object.h \
-    material.h
+    material.h \
+    texture.h
 
 FORMS += \
     mainwindow.ui

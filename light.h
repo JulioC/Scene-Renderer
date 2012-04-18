@@ -2,6 +2,7 @@
 #define LIGHT_H
 
 #include <QVector3D>
+#include <QVector4D>
 
 #include "material.h"
 
@@ -10,15 +11,13 @@ class QGLShaderProgram;
 class Light
 {
 public:
-  Light(const QVector3D &position, const Material &material);
-  virtual ~Light();
+  QVector3D position;
+  QVector4D brightness;
 
-  virtual void apply(QGLShaderProgram *shaderProgram, const char *identifier);
+  Light(const QVector3D &p, const QVector4D &b);
+  ~Light();
 
-protected:
-  QVector3D _position;
-  Material _material;
-
+  void apply(QGLShaderProgram *shaderProgram, const char *identifier);
 };
 
 #endif // LIGHT_H
