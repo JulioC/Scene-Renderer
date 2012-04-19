@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     object.cpp \
     material.cpp \
     texture.cpp \
-    keyvalues.cpp
+    keyvalues.cpp \
+    sceneparser.cpp
 
 HEADERS += \
     mesh.h \
@@ -30,7 +31,8 @@ HEADERS += \
     object.h \
     material.h \
     texture.h \
-    keyvalues.h
+    keyvalues.h \
+    sceneparser.h
 
 FORMS += \
     mainwindow.ui
