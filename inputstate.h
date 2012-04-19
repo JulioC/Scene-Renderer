@@ -8,15 +8,10 @@ class InputState
 public:
   enum MouseButton
   {
+    MouseNone   = 0,
     MouseLeft   = 1 << 0,
     MouseMiddle = 1 << 1,
     MouseRight  = 1 << 2
-  };
-  enum ModifierButton
-  {
-    ModifierShift = 1 << 0,
-    ModifierCtrl  = 1 << 1,
-    ModifierAlt   = 1 << 2
   };
 
   InputState();
@@ -24,9 +19,6 @@ public:
   void clearState();
 
   void update();
-
-  bool modifier(ModifierButton button) const;
-  void modifier(ModifierButton button, bool state);
 
   bool mouseButton(MouseButton button) const;
   void mouseButton(MouseButton button, bool state);
@@ -41,11 +33,11 @@ public:
   QPointF mouseMotion() const;
 
 private:
-  uint _modifierState;
-
+  uint _nextMouseState;
   uint _mouseState;
   uint _prevMouseState;
 
+  QPointF _nextMousePosition;
   QPointF _mousePosition;
   QPointF _prevMousePosition;
 
