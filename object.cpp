@@ -16,7 +16,12 @@ Object::Object(Mesh *mesh, QGLShaderProgram *shaderProgram, Material *material):
 
 Object::~Object()
 {
+  QList<QGLShader *> shaders = _shaderProgram->shaders();
+  for(int i = 0, s = shaders.size(); i < s; ++i) {
+    delete shaders.at(i);
+  }
   delete _shaderProgram;
+
   delete _mesh;
   if(_material) {
     delete _material;
@@ -60,7 +65,9 @@ void Object::draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection,
     pair.second->bind(shaderProgram, pair.first);
   }
 
-  _material->apply(shaderProgram, "Material");
+  if(_material) {
+    _material->apply(shaderProgram, "Material");
+  }
 
   _mesh->draw(shaderProgram);
 }
