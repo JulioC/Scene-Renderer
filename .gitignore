@@ -1,0 +1,10 @@
+# unix hidden files
+.*
+!.gitignore
+*~
+
+# models are too heavy
+models/
+
+# Qt user settings
+*.user
