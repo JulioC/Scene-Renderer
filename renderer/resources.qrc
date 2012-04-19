@@ -1,16 +1,4 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/fshader.glsl</file>
-        <file>shaders/vshader.glsl</file>
-        <file>shaders/blinn/fshader.glsl</file>
-        <file>shaders/blinn/vshader.glsl</file>
-        <file>shaders/gouraud/fshader.glsl</file>
-        <file>shaders/gouraud/vshader.glsl</file>
-        <file>shaders/normals/fshader.glsl</file>
-        <file>shaders/normals/vshader.glsl</file>
-        <file>shaders/phong/fshader.glsl</file>
-        <file>shaders/phong/vshader.glsl</file>
-        <file>shaders/toon/fshader.glsl</file>
-        <file>shaders/toon/vshader.glsl</file>
     </qresource>
 </RCC>
