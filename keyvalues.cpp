@@ -1,8 +1,10 @@
 #include "keyvalues.h"
 
-#include <stdio.h>
+#include <string.h>
 
 #define KEYVALUES_TOKEN_SIZE 1024
+
+int KeyValues::counter = 0;
 
 KeyValues::KeyValues():
   _name(NULL),
@@ -10,25 +12,35 @@ KeyValues::KeyValues():
   _subKey(NULL),
   _nextKey(NULL)
 {
+  counter++;
 }
 
 KeyValues::KeyValues(const char *name):
-  _name(NULL)
+  _name(NULL),
+  _value(NULL),
+  _subKey(NULL),
+  _nextKey(NULL)
 {
+  counter++;
   setName(name);
 }
 
 KeyValues::~KeyValues()
 {
-  KeyValues *cur = _subKey;
-  while(cur) {
-    KeyValues *tmp = cur->nextKey();
-    delete cur;
-    cur = tmp;
+  if(_nextKey) {
+    delete _nextKey;
   }
 
-  delete[] _name;
-  delete[] _value;
+  if(_subKey) {
+    delete _subKey;
+  }
+
+  if(_name) {
+    delete[] _name;
+  }
+  if(_value) {
+    delete[] _value;
+  }
 }
 
 void KeyValues::setName(const char *name)
@@ -93,7 +105,7 @@ bool KeyValues::loadBuffer(char *buffer)
 
   while(true) {
     const char *token;
-    token = readToken(&token, &quoted);
+    token = readToken(&buffer, &quoted);
 
     // End of file
     if(!buffer || !token || *token == '\0') {
@@ -112,7 +124,7 @@ bool KeyValues::loadBuffer(char *buffer)
     }
 
     // Inner block
-    token = readToken(&token, &quoted);
+    token = readToken(&buffer, &quoted);
     if(token && *token == '{' && !quoted) {
       current->loadBufferRecursive(&buffer);
     }
@@ -129,45 +141,54 @@ void KeyValues::loadBufferRecursive(char **buffer)
 {
   bool quoted;
   KeyValues *key = NULL;
-
-  KeyValues *current = this;
+  KeyValues *previous = NULL;
 
   while(true) {
     const char *token;
 
-    token = readToken(&token, &quoted);
+    token = readToken(buffer, &quoted);
     if(!token || *token == '\0') {
       break;
     }
 
     // End of block
-    if(token && *token == '}' && !quoted) {
+    if(*token == '}' && !quoted) {
       break;
     }
 
-    if(!key) {
-      // Creating the key
-      KeyValues* key = new KeyValues(token);
-      if(current) {
-        current->setNextKey(key);
+    if(*token == '{' && !quoted) {
+      if(key) {
+        // Sub block
+        key->loadBufferRecursive(buffer);
+        previous = key;
+        key = NULL;
       }
       else {
-        // The first sub key
-        _subKey = key;
+        break;
       }
-      current = key;
-    }
-    else if(token && *token == '{' && !quoted) {
-      // Sub block
-      key->loadBufferRecursive(buffer);
     }
     else {
-      key->setValue(token);
+      if(!key) {
+        // Creating the key
+        key = new KeyValues(token);
+        if(previous) {
+          previous->setNextKey(key);
+        }
+        else {
+          // The first sub key
+          _subKey = key;
+        }
+      }
+      else {
+        key->setValue(token);
+        previous = key;
+        key = NULL;
+      }
     }
   }
 }
 
-char *KeyValues::readToken(const char **buffer, bool *quoted)
+char *KeyValues::readToken(char **buffer, bool *quoted)
 {
   static char buf[KEYVALUES_TOKEN_SIZE];
 
@@ -254,6 +275,7 @@ char *KeyValues::readToken(const char **buffer, bool *quoted)
   }
 
   buf[count] = '\0';
+
   return buf;
 }
 
@@ -313,5 +335,23 @@ bool KeyValues::isEmpty(const char* name)
   return (_value == NULL);
 }
 
-
+void KeyValues::print(FILE *out, uint indentation)
+{
+  if(_name) {
+    fprintf(out, "%*s\"%s\" ", indentation, " ", _name);
+  }
+  if(_value) {
+    fprintf(out, "\"%s\" ", _value);
+  }
+  if(_subKey) {
+    fprintf(out, "{\n");
+    KeyValues *key = _subKey;
+    while(key) {
+      key->print(out, indentation + 2);
+      key = key->nextKey();
+    }
+    fprintf(out, "%*s}", indentation, " ");
+  }
+  fprintf(out, "\n");
+}
 

@@ -1,12 +1,14 @@
 #ifndef KEYVALUES_H
 #define KEYVALUES_H
 
-#include <QVector3D>
-#include <QVector4D>
+#include <stdlib.h>
+#include <stdio.h>
 
 class KeyValues
 {
 public:
+  static int counter;
+
   KeyValues();
   ~KeyValues();
 
@@ -29,18 +31,20 @@ public:
   const char *getString(const char *name = NULL, const char *value = "");
   bool isEmpty(const char* name = NULL);
 
+  void print(FILE *out = stdout, uint indentation = 0);
+
 protected:
-  KeyValues(const char *name);
-
-  void loadBufferRecursive(char **buffer);
-
-  char *readToken(const char **buffer, bool *quoted);
-
   char *_name;
   char *_value;
 
   KeyValues *_subKey;
   KeyValues *_nextKey;
+
+  KeyValues(const char *name);
+
+  void loadBufferRecursive(char **buffer);
+
+  char *readToken(char **buffer, bool *quoted);
 
 private:
   KeyValues(KeyValues &);

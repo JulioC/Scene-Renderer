@@ -51,5 +51,6 @@ OTHER_FILES += \
     shaders/toon/vshader.glsl \
     shaders/toon/fshader.glsl \
     shaders/fshader.glsl \
-    shaders/vshader.glsl
+    shaders/vshader.glsl \
+    TestScene.txt
 
