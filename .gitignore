@@ -8,3 +8,7 @@ models/
 
 # Qt user settings
 *.user
+
+# Qt build dirs
+*-build-*/
+*-build-*/
