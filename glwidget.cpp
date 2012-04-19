@@ -79,6 +79,9 @@ void GLWidget::resizeGL(int width, int height) {
 }
 
 void GLWidget::mousePressEvent(QMouseEvent* event) {
+  QPointF point = normalizePoint(QPointF(event->x(), event->y()));
+  _inputState.mousePosition(point);
+
   if(event->button() == Qt::MiddleButton) {
     _inputState.mouseButton(InputState::MouseMiddle, true);
   }
@@ -92,6 +95,9 @@ void GLWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent* event) {
+  QPointF point = normalizePoint(QPointF(event->x(), event->y()));
+  _inputState.mousePosition(point);
+
   if(event->button() == Qt::MiddleButton) {
     _inputState.mouseButton(InputState::MouseMiddle, false);
   }
