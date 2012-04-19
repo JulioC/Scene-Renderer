@@ -10,9 +10,18 @@ Scene::Scene() :
   _lights(),
   _objects(),
   _projection(),
+  _view(),
   _camera(),
   _trackball()
 {
+  projection(60.0, 1.0, 1.0, 100.0);
+
+  // TODO: add method to set view
+  _view.setToIdentity();
+  _view.lookAt(QVector3D(0.0, 0.0, 1.0),
+               QVector3D(0.0, 0.0, 0.0),
+               QVector3D(0.0, 1.0, 0.0));
+  _view.translate(QVector3D(0.0, 0.0, -1.0));
 }
 
 Scene::~Scene()
@@ -31,16 +40,23 @@ void Scene::update(const InputState &state, float delta)
     _objects.at(i)->update(state, delta);
   }
 
-  _trackball.update(state, delta);
+  bool dirty = false;
+  if(_trackball.update(state, delta)) {
+    dirty = true;
+  }
+  if(_camera.update(state, delta)) {
+    dirty = true;
+  }
 
-  // TODO: add dirty flag (?)
-  _view.setToIdentity();
-  _view.lookAt(QVector3D(0.0, 0.0, 1.0),
-               QVector3D(0.0, 0.0, 0.0),
-               QVector3D(0.0, 1.0, 0.0));
-  _view.translate(QVector3D(0.0, 0.0, -1.0));
-  _view.translate(_camera.translation());
-  _view.rotate(_trackball.rotation());
+  if(dirty) {
+    _view.setToIdentity();
+    _view.lookAt(QVector3D(0.0, 0.0, 1.0),
+                 QVector3D(0.0, 0.0, 0.0),
+                 QVector3D(0.0, 1.0, 0.0));
+    _view.translate(QVector3D(0.0, 0.0, -1.0));
+    _view.translate(_camera.translation());
+    _view.rotate(_trackball.rotation());
+  }
 }
 
 void Scene::draw(QGLShaderProgram *shaderProgram)
