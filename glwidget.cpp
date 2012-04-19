@@ -4,10 +4,8 @@
 #include <QGLShaderProgram>
 #include <QMatrix4x4>
 
-#include "mesh.h"
-#include "meshloaderoff.h"
-#include "meshloaderply.h"
 #include "scene.h"
+#include "sceneparser.h"
 
 GLWidget::GLWidget(QWidget *parent) :
   QGLWidget(parent),
@@ -94,6 +92,7 @@ void GLWidget::initializeGL() {
   glEnable(GL_CULL_FACE);
 
   // TODO: Load sample scene
+  _scene = SceneParser::load("/home/julio/CG/Projeto3/Renderer/TestScene.txt");
 }
 
 void GLWidget::paintGL() {
