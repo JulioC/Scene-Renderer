@@ -4,6 +4,7 @@
 
 #include "light.h"
 #include "object.h"
+#include "keyvalues.h"
 
 Scene::Scene() :
   _lights(),
@@ -51,6 +52,7 @@ void Scene::draw(QGLShaderProgram *shaderProgram)
     }
     else {
       myShaderProgram = object->shaderProgram();
+      myShaderProgram->bind();
     }
 
     applyLights(myShaderProgram);
