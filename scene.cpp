@@ -30,8 +30,8 @@ void Scene::update(const InputState &state, float delta)
   for(int i = 0, s = _objects.size(); i < s; ++i) {
     _objects.at(i)->update(state, delta);
   }
-  _camera.move(state.mousePosition());
-  _trackball.move(state.mousePosition());
+
+  _trackball.update(state, delta);
 
   // TODO: add dirty flag (?)
   _view.setToIdentity();

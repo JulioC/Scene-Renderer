@@ -4,6 +4,8 @@
 #include <QVector3D>
 #include <QQuaternion>
 
+#include "inputstate.h"
+
 class Trackball
 {
 public:
@@ -13,20 +15,18 @@ public:
     Rotation
   };
 
-  Trackball(float rate = 1.0, float radius = 1.0);
+  Trackball(float rate = 1.0, float radius = 1.0, InputState::MouseButton button = InputState::MouseLeft);
 
   void setDimensions(int width, int height);
 
-  void press(const QPointF& point);
-  void release(const QPointF& point);
-
-  void move(const QPointF& point);
+  void update(const InputState &state, float delta);
 
   void reset();
 
   QQuaternion rotation();
 
 protected:
+  InputState::MouseButton _button;
   bool _pressed;
 
   float _rate;
@@ -38,6 +38,11 @@ protected:
   QVector3D _axis;
 
   QQuaternion _rotation;
+
+  void press(const QPointF& point);
+  void release(const QPointF& point);
+
+  void move(const QPointF& point);
 
   QVector3D project(const QPointF& point);
 };

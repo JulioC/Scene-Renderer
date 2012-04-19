@@ -2,11 +2,42 @@
 
 #include <math.h>
 
-Trackball::Trackball(float rate, float radius):
-  _rotation(),
+Trackball::Trackball(float rate, float radius, InputState::MouseButton button):
+  _button(button),
+  _pressed(false),
   _rate(rate),
-  _radius(radius)
+  _radius(radius),
+  _lastPosition(0.0, 0.0, 0.0),
+  _angle(0.0),
+  _axis(0.0, 0.0, 0.0),
+  _rotation(1.0, 0.0, 0.0, 0.0)
 {
+}
+
+void Trackball::reset()
+{
+  _pressed = false;
+  _rotation = QQuaternion();
+}
+
+void Trackball::update(const InputState &state, float delta)
+{
+  if(_pressed) {
+    if(!state.mouseButton(_button)) {
+      release(state.mousePosition());
+    }
+    move(state.mousePosition());
+  }
+  else {
+    if(state.mousePressed(_button)) {
+      press(state.mousePosition());
+    }
+  }
+}
+
+QQuaternion Trackball::rotation()
+{
+  return _rotation;
 }
 
 void Trackball::press(const QPointF &point)
@@ -19,6 +50,7 @@ void Trackball::press(const QPointF &point)
 
 void Trackball::release(const QPointF &point)
 {
+  // TODO: Keep acceleration
   _pressed = false;
 }
 
@@ -44,16 +76,6 @@ void Trackball::move(const QPointF &point)
   }
 
   _lastPosition = position;
-}
-
-void Trackball::reset()
-{
-  _rotation = QQuaternion();
-}
-
-QQuaternion Trackball::rotation()
-{
-  return _rotation;
 }
 
 QVector3D Trackball::project(const QPointF &point)
