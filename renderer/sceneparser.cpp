@@ -21,7 +21,10 @@ Scene *SceneParser::load(const char *filename)
   // TODO: should we have an internal object for the parser?
   setPath(filename);
 
-  return loadScene(data);
+  Scene *scene = loadScene(data);
+  delete data;
+
+  return scene;
 }
 
 Scene *SceneParser::loadScene(KeyValues *data)
@@ -38,7 +41,7 @@ Scene *SceneParser::loadScene(KeyValues *data)
         scene->addObject(object);
       }
       else {
-        fprintf(stderr, "Failed to load Object");
+        fprintf(stderr, "Failed to load Object\n");
       }
     }
     else if(strcmp(name, "light") == 0) {
@@ -47,15 +50,16 @@ Scene *SceneParser::loadScene(KeyValues *data)
         scene->addLight(light);
       }
       else {
-        fprintf(stderr, "Failed to load Light");
+        fprintf(stderr, "Failed to load Light\n");
       }
     }
     else {
-      fprintf(stderr, "Unknown element: %s", name);
+      fprintf(stderr, "Unknown element: %s\n", name);
     }
 
     key = key->nextKey();
   }
+
 
   return scene;
 }
@@ -64,7 +68,7 @@ Object *SceneParser::loadObject(KeyValues *data)
 {
   const char *format = data->getString("format");
   if(!format) {
-    fprintf(stderr, "Key 'format' not found on Object");
+    fprintf(stderr, "Key 'format' not found on Object\n");
     return NULL;
   }
 
@@ -72,7 +76,7 @@ Object *SceneParser::loadObject(KeyValues *data)
   if(strcmp("OFF", format) == 0 || strcmp("PLY", format) == 0) {
     const char *file = data->getString("file");
     if(!file) {
-      fprintf(stderr, "Key 'file' not found on Object");
+      fprintf(stderr, "Key 'file' not found on Object\n");
       return NULL;
     }
     char *filename = resolvePath(file);
@@ -87,7 +91,7 @@ Object *SceneParser::loadObject(KeyValues *data)
     }
 
     if(!meshData) {
-      fprintf(stderr, "Failed to load MeshData of %s", filename);
+      fprintf(stderr, "Failed to load MeshData of %s\n", filename);
       delete[] filename;
       return NULL;
     }
@@ -105,7 +109,7 @@ Object *SceneParser::loadObject(KeyValues *data)
     delete[] filename;
   }
   else {
-    fprintf(stderr, "Invalid object format: %s", format);
+    fprintf(stderr, "Invalid object format: %s\n", format);
     return NULL;
   }
 
@@ -122,12 +126,12 @@ Object *SceneParser::loadObject(KeyValues *data)
         shaderProgram->addShader(shader);
       }
       else {
-        fprintf(stderr, "Failed to load shader");
+        fprintf(stderr, "Failed to load shader\n");
       }
     }
-    else if (strcmp(key->name(), "material") == 0) {
+    else if (strcmp(key->name(), "material\n") == 0) {
       if(material) {
-        fprintf(stderr, "Duplicated material definition");
+        fprintf(stderr, "Duplicated material definition\n");
       }
       else {
         material = loadMaterial(key);
@@ -137,7 +141,7 @@ Object *SceneParser::loadObject(KeyValues *data)
   }
 
   if(!shaderProgram->link()) {
-    fprintf(stderr, "Failed to link shader program");
+    fprintf(stderr, "Failed to link shader program\n");
   }
 
   Object *object = new Object(mesh, shaderProgram, material);
@@ -145,7 +149,7 @@ Object *SceneParser::loadObject(KeyValues *data)
   key = data->firstSubKey();
   while(key) {
    if (strcmp(key->name(), "texture") == 0) {
-      fprintf(stderr, "Loading texture");
+      fprintf(stderr, "Loading texture\n");
       key->print(stderr);
     }
     key = key->nextKey();
