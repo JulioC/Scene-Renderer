@@ -20,24 +20,23 @@ void Trackball::reset()
   _rotation = QQuaternion();
 }
 
-void Trackball::update(const InputState &state, float delta)
+bool Trackball::update(const InputState &state, float delta)
 {
+  bool changed = false;
   if(_pressed) {
     if(!state.mouseButton(_button)) {
       release(state.mousePosition());
     }
     move(state.mousePosition());
+    changed = true;
   }
   else {
     if(state.mousePressed(_button)) {
       press(state.mousePosition());
+      changed = true;
     }
   }
-}
-
-QQuaternion Trackball::rotation()
-{
-  return _rotation;
+  return changed;
 }
 
 void Trackball::press(const QPointF &point)

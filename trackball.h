@@ -19,11 +19,11 @@ public:
 
   void setDimensions(int width, int height);
 
-  void update(const InputState &state, float delta);
+  bool update(const InputState &state, float delta);
 
   void reset();
 
-  QQuaternion rotation();
+  inline QQuaternion rotation() const { return _rotation; }
 
 protected:
   InputState::MouseButton _button;
