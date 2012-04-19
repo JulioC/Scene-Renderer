@@ -10,11 +10,14 @@
 #include "scene.h"
 #include "texture.h"
 
+#define MAX_PATH_LENGTH 128
+
 Scene *SceneParser::load(const char *filename)
 {
   KeyValues *data = new KeyValues();
   if(!data->loadFile(filename)) {
-    fprintf(stderr, "Failed to load Scene");
+    fprintf(stderr, "Failed to load Scene %s", filename);
+    delete data;
     return NULL;
   }
 
@@ -162,13 +165,13 @@ QGLShader *SceneParser::loadShader(KeyValues *data)
 {
   const char *type = data->getString("type");
   if(!type) {
-    fprintf(stderr, "Key 'type' not found on Shader");
+    fprintf(stderr, "Key 'type' not found on Shader\n");
     return NULL;
   }
 
   const char *file = data->getString("file");
   if(!file) {
-    fprintf(stderr, "Key 'file' not found on Shader");
+    fprintf(stderr, "Key 'file' not found on Shader\n");
     return NULL;
   }
   char *filename = resolvePath(file);
@@ -181,14 +184,14 @@ QGLShader *SceneParser::loadShader(KeyValues *data)
     shaderType = QGLShader::Fragment;
   }
   else {
-    fprintf(stderr, "Invalid shader type: %s", type);
+    fprintf(stderr, "Invalid shader type: %s\n", type);
     delete[] filename;
     return NULL;
   }
 
   QGLShader *shader = new QGLShader(shaderType);
   if(!shader->compileSourceFile(filename)) {
-    fprintf(stderr, "Failed to load shader %s", filename);
+    fprintf(stderr, "Failed to load shader %s\n", filename);
     fprintf(stdout, shader->log().toStdString().c_str());
     delete shader;
     delete[] filename;
@@ -216,13 +219,13 @@ Light *SceneParser::loadLight(KeyValues *data)
 {
   const char* position = data->getString("position");
   if(!position) {
-    fprintf(stderr, "Key 'position' not found on Light");
+    fprintf(stderr, "Key 'position' not found on Light\n");
     return NULL;
   }
 
   const char* brightness = data->getString("brightness");
   if(!brightness) {
-    fprintf(stderr, "Key 'brightness' not found on Light");
+    fprintf(stderr, "Key 'brightness' not found on Light\n");
     return NULL;
   }
 
@@ -251,7 +254,7 @@ QVector4D SceneParser::strtoV4D(const char *str)
   return QVector4D(x, y, z, w);
 }
 
-char *SceneParser::currentPath = NULL;
+char SceneParser::currentPath[MAX_PATH_LENGTH] = {0};
 
 void SceneParser::setPath(const char *filename)
 {
@@ -260,7 +263,6 @@ void SceneParser::setPath(const char *filename)
     len--;
   }
 
-  currentPath = new char[len + 1];
   for(int i = 0; i <= len; ++i) {
     currentPath[i] = filename[i];
   }

@@ -31,7 +31,7 @@ protected:
   static QVector3D strtoV3D(const char *str);
   static QVector4D strtoV4D(const char *str);
 
-  static char *currentPath;
+  static char currentPath[];
   static void setPath(const char *filename);
   static char *resolvePath(const char *filename);
 };

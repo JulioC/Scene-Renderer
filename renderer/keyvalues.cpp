@@ -214,10 +214,18 @@ char *KeyValues::readToken(char **buffer, bool *quoted)
     }
 
     // Ignore comments
-    if(c == '#') {
-      while((c > 0) && (c != '\n')) {
-        c = **buffer;
-        (*buffer)++;
+    if(c == '/') {
+      c = **buffer;
+      (*buffer)++;
+
+      if(c == '/') {
+        while((c > 0) && (c != '\n')) {
+          c = **buffer;
+          (*buffer)++;
+        }
+      }
+      else {
+        (*buffer)--;
       }
     }
     else {
