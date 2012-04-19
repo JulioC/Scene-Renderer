@@ -2,11 +2,13 @@
 
 #include "keyvalues.h"
 #include "light.h"
+#include "material.h"
 #include "mesh.h"
 #include "meshloaderoff.h"
 #include "meshloaderply.h"
 #include "object.h"
 #include "scene.h"
+#include "texture.h"
 
 Scene *SceneParser::load(const char *filename)
 {
@@ -60,55 +62,42 @@ Scene *SceneParser::loadScene(KeyValues *data)
 
 Object *SceneParser::loadObject(KeyValues *data)
 {
-  KeyValues *key;
-
-  key = data->find("format");
-  if(!key) {
+  const char *format = data->getString("format");
+  if(!format) {
+    fprintf(stderr, "Key 'format' not found on Object");
     return NULL;
   }
-  const char *format = key->getString();
 
   Mesh *mesh;
-  if(strcmp("OFF", format) == 0) {
-    key = data->find("file");
-    if(!key) {
+  if(strcmp("OFF", format) == 0 || strcmp("PLY", format) == 0) {
+    const char *file = data->getString("file");
+    if(!file) {
+      fprintf(stderr, "Key 'file' not found on Object");
       return NULL;
     }
-    const char *file = key->getString();
     char *filename = resolvePath(file);
 
-    MeshData *meshData = MeshLoaderOFF::load(filename);
+    MeshData *meshData;
+
+    if(strcmp("OFF", format) == 0) {
+      meshData = MeshLoaderOFF::load(filename);
+    }
+    else if(strcmp("PLY", format) == 0) {
+      meshData = MeshLoaderPLY::load(filename);
+    }
+
     if(!meshData) {
       fprintf(stderr, "Failed to load MeshData of %s", filename);
       delete[] filename;
       return NULL;
     }
 
-    meshData->normalize();
-    meshData->computeNormals();
-
-    mesh = new Mesh(meshData);
-
-    delete meshData;
-    delete[] filename;
-  }
-  else if(strcmp("PLY", format) == 0) {
-    key = data->find("file");
-    if(!key) {
-      return NULL;
+    if(data->getInt("normalize", 1)) {
+      meshData->normalize();
     }
-    const char *file = key->getString();
-    char *filename = resolvePath(file);
-
-    MeshData *meshData = MeshLoaderPLY::load(filename);
-    if(!meshData) {
-      fprintf(stderr, "Failed to load MeshData of %s", filename);
-      delete[] filename;
-      return NULL;
+    if(data->getInt("normals", 0)) {
+      meshData->computeNormals();
     }
-
-    meshData->normalize();
-    meshData->computeNormals();
 
     mesh = new Mesh(meshData);
 
@@ -120,7 +109,10 @@ Object *SceneParser::loadObject(KeyValues *data)
     return NULL;
   }
 
+  Material *material = NULL;
   QGLShaderProgram *shaderProgram = new QGLShaderProgram();
+
+  KeyValues *key;
 
   key = data->firstSubKey();
   while(key) {
@@ -134,12 +126,12 @@ Object *SceneParser::loadObject(KeyValues *data)
       }
     }
     else if (strcmp(key->name(), "material") == 0) {
-      fprintf(stderr, "Loading material");
-      key->print(stderr);
-    }
-    else if (strcmp(key->name(), "texture") == 0) {
-      fprintf(stderr, "Loading texture");
-      key->print(stderr);
+      if(material) {
+        fprintf(stderr, "Duplicated material definition");
+      }
+      else {
+        material = loadMaterial(key);
+      }
     }
     key = key->nextKey();
   }
@@ -148,24 +140,33 @@ Object *SceneParser::loadObject(KeyValues *data)
     fprintf(stderr, "Failed to link shader program");
   }
 
-  return new Object(mesh, shaderProgram);
+  Object *object = new Object(mesh, shaderProgram, material);
+
+  key = data->firstSubKey();
+  while(key) {
+   if (strcmp(key->name(), "texture") == 0) {
+      fprintf(stderr, "Loading texture");
+      key->print(stderr);
+    }
+    key = key->nextKey();
+  }
+
+  return object;
 }
 
 QGLShader *SceneParser::loadShader(KeyValues *data)
 {
-  KeyValues *key;
-
-  key = data->find("type");
-  if(!key) {
+  const char *type = data->getString("type");
+  if(!type) {
+    fprintf(stderr, "Key 'type' not found on Shader");
     return NULL;
   }
-  const char *type = key->getString();
 
-  key = data->find("file");
-  if(!key) {
+  const char *file = data->getString("file");
+  if(!file) {
+    fprintf(stderr, "Key 'file' not found on Shader");
     return NULL;
   }
-  const char *file = key->getString();
   char *filename = resolvePath(file);
 
   QGLShader::ShaderType shaderType;
@@ -184,45 +185,63 @@ QGLShader *SceneParser::loadShader(KeyValues *data)
   QGLShader *shader = new QGLShader(shaderType);
   if(!shader->compileSourceFile(filename)) {
     fprintf(stderr, "Failed to load shader %s", filename);
-    fprintf(stderr, shader->log().toStdString().c_str());
+    fprintf(stdout, shader->log().toStdString().c_str());
     delete shader;
     delete[] filename;
     return NULL;
   }
+  delete[] filename;
 
   return shader;
 }
 
-Light *SceneParser::loadLight(KeyValues *data)
+Material *SceneParser::loadMaterial(KeyValues *data)
 {
-  KeyValues *key = NULL;
+  const char* ambient = data->getString("ambient");
+  const char* diffuse = data->getString("diffuse");
+  const char* specular = data->getString("specular");
 
-  key = data->find("position");
-  if(!key) {
-    fprintf(stderr, "No position find for Light");
-    return NULL;
-  }
-  QVector3D position = strToVector3D(key->getString());
-
-  key = data->find("brightness");
-  if(!key) {
-    fprintf(stderr, "No brightness find for Light");
-    return NULL;
-  }
-  QVector4D brightness = strToVector4D(key->getString());
-
-  return new Light(position, brightness);
+  return new Material(strtoV4D(ambient), strtoV4D(diffuse), strtoV4D(specular));
+}
+Texture *SceneParser::loadTexture(KeyValues *data)
+{
+  return NULL;
 }
 
-QVector3D SceneParser::strToVector3D(const char *str)
+Light *SceneParser::loadLight(KeyValues *data)
 {
+  const char* position = data->getString("position");
+  if(!position) {
+    fprintf(stderr, "Key 'position' not found on Light");
+    return NULL;
+  }
+
+  const char* brightness = data->getString("brightness");
+  if(!brightness) {
+    fprintf(stderr, "Key 'brightness' not found on Light");
+    return NULL;
+  }
+
+  return new Light(strtoV3D(position), strtoV4D(brightness));
+}
+
+QVector3D SceneParser::strtoV3D(const char *str)
+{
+  if(!str) {
+    return QVector3D();
+  }
+
   float x, y, z;
   sscanf(str, "%f %f %f", &x, &y, &z);
   return QVector3D(x, y, z);
 }
 
-QVector4D SceneParser::strToVector4D(const char *str)
+QVector4D SceneParser::strtoV4D(const char *str)
 {
+  if(!str) {
+    return QVector4D();
+  }
+
   float x, y, z, w;
   sscanf(str, "%f %f %f %f", &x, &y, &z, &w);
   return QVector4D(x, y, z, w);

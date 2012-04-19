@@ -7,8 +7,10 @@
 class QGLShader;
 
 class Light;
+class Material;
 class Object;
 class Scene;
+class Texture;
 class KeyValues;
 
 class SceneParser
@@ -18,12 +20,16 @@ public:
 
 protected:
   static Scene *loadScene(KeyValues *data);
+
   static Object *loadObject(KeyValues *data);
   static QGLShader *loadShader(KeyValues *data);
+  static Material *loadMaterial(KeyValues *data);
+  static Texture *loadTexture(KeyValues *data);
+
   static Light *loadLight(KeyValues *data);
 
-  static QVector3D strToVector3D(const char *str);
-  static QVector4D strToVector4D(const char *str);
+  static QVector3D strtoV3D(const char *str);
+  static QVector4D strtoV4D(const char *str);
 
   static char *currentPath;
   static void setPath(const char *filename);

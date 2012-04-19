@@ -1,11 +1,13 @@
 "scene" {
   "object" {
     "format" "OFF"
-    "file" "/home/julio/CG/Modelos/off/homer.off"
+    "file" "/homer.off"
+    "normals" "1"
+    "texcords" "1"
     "material" {
       "ambient" "0.0 0.1 0.2 1.0"
-      "diffuse" "0.0 0.1 0.2 1.0"
-      "specular" "0.0 0.1 0.2 1.0"
+      "diffuse" "0.0 0.1 0.3 1.0"
+      "specular" "0.0 0.1 0.4 1.0"
     }
     "texture" {
       "file" "/etc/text"
@@ -13,36 +15,11 @@
     }
     "shader" {
       "type" "vertex"
-      "file" "shaders/normals/vshader.glsl"
+      "file" "shaders/vshader.glsl"
     }
     "shader" {
       "type" "fragment"
-      "file" "shaders/normals/fshader.glsl"
+      "file" "shaders/fshader.glsl"
     }
-  }
-  "object" {
-    "format" "OFF"
-    "file" "/home/julio/CG/Modelos/off/elk.off"
-    "material" {
-      "ambient" "0.0 0.1 0.2 1.0"
-      "diffuse" "0.0 0.1 0.2 1.0"
-      "specular" "0.0 0.1 0.2 1.0"
-    }
-    "texture" {
-      "file" "/etc/text"
-      "name" "bumpMap"
-    }
-    "shader" {
-      "type" "vertex"
-      "file" "shaders/phong/vshader.glsl"
-    }
-    "shader" {
-      "type" "fragment"
-      "file" "shaders/phong/fshader.glsl"
-    }
-  }
-  "light" {
-    "position" "0.0 0.1 0.2 1.0"
-    "brightness" "0.0 0.1 0.2 1.0"
   }
 }
