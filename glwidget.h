@@ -6,6 +6,7 @@
 #include <QGLWidget>
 
 #include "inputstate.h"
+#include "timer.h"
 
 class Scene;
 
@@ -30,6 +31,7 @@ public slots:
   void animate();
 
 protected:
+  Timer _timer;
   QTimer _qtimer;
 
   InputState _inputState;

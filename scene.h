@@ -19,7 +19,7 @@ public:
   Scene();
   virtual ~Scene();
 
-  virtual void update(const InputState &state);
+  virtual void update(const InputState &state, float delta);
   virtual void draw(QGLShaderProgram *shaderProgram = NULL);
 
   void projection(float fov, float ratio, float near, float far);

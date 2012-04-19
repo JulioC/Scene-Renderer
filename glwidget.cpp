@@ -9,12 +9,15 @@
 
 GLWidget::GLWidget(QWidget *parent) :
   QGLWidget(parent),
+  _timer(),
   _qtimer(this),
   _inputState(),
   _scene(NULL)
 {
   connect(&_qtimer, SIGNAL(timeout()), this, SLOT(animate()));
   _qtimer.start(0.01);
+
+  _timer.start();
 }
 
 GLWidget::~GLWidget()
@@ -26,47 +29,15 @@ GLWidget::~GLWidget()
 
 void GLWidget::animate()
 {
+  _timer.update();
+
   _inputState.update();
   if(_scene) {
-    _scene->update(_inputState);
+    _scene->update(_inputState, _timer.elapsed());
   }
 
   updateGL();
 }
-
-/*void GLWidget::loadOFF(const char *filename) {
-  MeshData *meshData = MeshLoaderOFF::load(filename);
-  if(!meshData) {
-    qDebug("Failed to load OFF file %s", filename);
-    return;
-  }
-
-  meshData->normalize();
-  meshData->computeNormals();
-
-  if(_mesh) {
-    delete _mesh;
-  }
-  _mesh = new Mesh(meshData);
-  delete meshData;
-}
-
-void GLWidget::loadPLY(const char *filename) {
-  /*MeshData *meshData = MeshLoaderPLY::load(filename);
-  if(!meshData) {
-    qDebug("Failed to load PLY file %s", filename);
-    return;
-  }
-
-  meshData->normalize();
-  meshData->computeNormals();
-
-  if(_mesh) {
-    delete _mesh;
-  }
-  _mesh = new Mesh(meshData);
-  delete meshData;
-}*/
 
 void GLWidget::renderMode(RenderMode mode) {
   GLenum glmode;
@@ -91,7 +62,6 @@ void GLWidget::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  // TODO: Load sample scene
   _scene = SceneParser::load("/home/julio/CG/Projeto3/Renderer/TestScene.txt");
 }
 
@@ -139,50 +109,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event) {
   _inputState.mousePosition(point);
   event->accept();
 }
-/*
-bool GLWidget::setShaders(const char* vshader, const char* fshader) {
-  if(_shaderProgram) {
-    delete _shaderProgram;
-    _shaderProgram = NULL;
-  }
 
-  if(_vertShader) {
-    delete _vertShader;
-    _vertShader = NULL;
-  }
-
-  if(_fragShader) {
-    delete _fragShader;
-    _fragShader = NULL;
-  }
-
-  _vertShader = new QGLShader(QGLShader::Vertex);
-  _fragShader = new QGLShader(QGLShader::Fragment);
-
-  if(!_vertShader->compileSourceFile(vshader)) {
-    qWarning() << _vertShader->log();
-    return false;
-  }
-
-  if(!_fragShader->compileSourceFile(fshader)) {
-    qWarning() << _fragShader->log();
-    return false;
-  }
-
-  _shaderProgram = new QGLShaderProgram();
-  _shaderProgram->addShader(_vertShader);
-  _shaderProgram->addShader(_fragShader);
-
-  if(!_shaderProgram->link()) {
-    qWarning() << _shaderProgram->log();
-    return false;
-  }
-
-  _shaderProgram->bind();
-
-  return true;
-}
-*/
 void GLWidget::rebuildProjection() {
   float ratio = (float)width()/(float)height();
   if(_scene) {

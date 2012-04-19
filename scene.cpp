@@ -25,10 +25,10 @@ Scene::~Scene()
   }
 }
 
-void Scene::update(const InputState &state)
+void Scene::update(const InputState &state, float delta)
 {
   for(int i = 0, s = _objects.size(); i < s; ++i) {
-    _objects.at(i)->update(state);
+    _objects.at(i)->update(state, delta);
   }
   _camera.move(state.mousePosition());
   _trackball.move(state.mousePosition());
@@ -38,6 +38,7 @@ void Scene::update(const InputState &state)
   _view.lookAt(QVector3D(0.0, 0.0, 1.0),
                QVector3D(0.0, 0.0, 0.0),
                QVector3D(0.0, 1.0, 0.0));
+  _view.translate(QVector3D(0.0, 0.0, -1.0));
   _view.translate(_camera.translation());
   _view.rotate(_trackball.rotation());
 }

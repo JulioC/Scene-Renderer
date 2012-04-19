@@ -41,7 +41,7 @@ void Object::addTexture(Texture *texture, const char *identifier)
   _textures.append(TexPair(buffer, texture));
 }
 
-void Object::update(const InputState &state)
+void Object::update(const InputState &state, float delta)
 {
 }
 

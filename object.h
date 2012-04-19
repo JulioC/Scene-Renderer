@@ -21,7 +21,7 @@ public:
 
   void addTexture(Texture *texture, const char *identifier);
 
-  virtual void update(const InputState &state);
+  virtual void update(const InputState &state, float delta);
   virtual void draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection, const QMatrix4x4 &view);
 
   QGLShaderProgram* shaderProgram();
