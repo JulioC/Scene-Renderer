@@ -25,6 +25,9 @@ void InputState::update()
 
   _prevMousePosition = _mousePosition;
   _mousePosition = _nextMousePosition;
+
+  _mouseScroll = _nextMouseScroll;
+  _nextMouseScroll = 0;
 }
 
 bool InputState::mouseButton(MouseButton button) const
@@ -57,11 +60,6 @@ bool InputState::mouseUp(MouseButton button) const
   return button && !(_mouseState & button);
 }
 
-QPointF InputState::mousePosition() const
-{
-  return _mousePosition;
-}
-
 void InputState::mousePosition(const QPointF &position)
 {
   _nextMousePosition = position;
@@ -72,4 +70,8 @@ QPointF InputState::mouseMotion() const
   return _mousePosition - _prevMousePosition;
 }
 
+void InputState::mouseScroll(int scroll)
+{
+  _nextMouseScroll += scroll;
+}
 

@@ -119,6 +119,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event) {
   event->accept();
 }
 
+void GLWidget::wheelEvent(QWheelEvent* event) {
+  _inputState.mouseScroll(event->delta());
+  event->accept();
+}
+
 void GLWidget::rebuildProjection() {
   float ratio = (float)width()/(float)height();
   if(_scene) {

@@ -27,10 +27,13 @@ public:
   bool mouseDown(MouseButton button) const;
   bool mouseUp(MouseButton button) const;
 
-  QPointF mousePosition() const;
+  inline QPointF mousePosition() const { return _mousePosition; }
   void mousePosition(const QPointF &position);
 
   QPointF mouseMotion() const;
+
+  inline int mouseScroll() const { return _mouseScroll; }
+  void mouseScroll(int scroll);
 
 private:
   uint _nextMouseState;
@@ -40,6 +43,9 @@ private:
   QPointF _nextMousePosition;
   QPointF _mousePosition;
   QPointF _prevMousePosition;
+
+  int _nextMouseScroll;
+  int _mouseScroll;
 
 };
 
