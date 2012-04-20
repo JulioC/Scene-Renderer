@@ -1,13 +1,15 @@
 #include "camera.h"
 
-Camera::Camera(float rate, InputState::MouseButton button):
+Camera::Camera(float moveRate, float zoomRate, InputState::MouseButton button):
   _button(button),
   _pressed(false),
-  _rate(rate),
+  _moveRate(moveRate),
+  _zoomRate(zoomRate),
   _lastPoint(0.0, 0.0),
   _u(1.0, 0.0, 0.0),
   _v(0.0, 1.0, 0.0),
-  _translation(0.0, 0.0, 0.0)
+  _translation(0.0, 0.0, 0.0),
+  _scale(1.0)
 {
 }
 
@@ -21,6 +23,7 @@ void Camera::reset()
 {
   _pressed = false;
   _translation = QVector3D(0.0, 0.0, 0.0);
+  _scale = 1.0;
 }
 
 bool Camera::update(const InputState &state, float delta)
@@ -39,6 +42,13 @@ bool Camera::update(const InputState &state, float delta)
       changed = true;
     }
   }
+
+  int scroll = state.mouseScroll();
+  if(scroll != 0) {
+    _scale += scroll * _zoomRate;
+    changed = true;
+  }
+
   return changed;
 }
 
@@ -60,8 +70,8 @@ void Camera::move(const QPointF& point)
   }
 
   QPointF delta = point - _lastPoint;
-  _translation += _rate * delta.x() * _u;
-  _translation += _rate * delta.y() * _v;
+  _translation += _moveRate * delta.x() * _u;
+  _translation += _moveRate * delta.y() * _v;
 
   _lastPoint = point;
 }

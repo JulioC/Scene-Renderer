@@ -56,6 +56,7 @@ void Scene::update(const InputState &state, float delta)
     _view.translate(QVector3D(0.0, 0.0, -1.0));
     _view.translate(_camera.translation());
     _view.rotate(_trackball.rotation());
+    _view.scale(_camera.scale());
   }
 }
 
