@@ -121,6 +121,7 @@ Object *SceneParser::loadObject(KeyValues *data)
 
   KeyValues *key;
 
+  bool error = false;
   key = data->firstSubKey();
   while(key) {
     if(strcmp(key->name(), "shader") == 0) {
@@ -130,6 +131,8 @@ Object *SceneParser::loadObject(KeyValues *data)
       }
       else {
         fprintf(stderr, "Failed to load shader\n");
+        error = true;
+        break;
       }
     }
     else if (strcmp(key->name(), "material\n") == 0) {
@@ -145,9 +148,24 @@ Object *SceneParser::loadObject(KeyValues *data)
 
   if(!shaderProgram->link()) {
     fprintf(stderr, "Failed to link shader program\n");
+    error = true;
+  }
+
+  if(error) {
+    if(material) {
+      delete material;
+    }
+    delete shaderProgram;
+    delete mesh;
+    return NULL;
   }
 
   Object *object = new Object(mesh, shaderProgram, material);
+
+  const char *position = data->getString("position");
+  if(position) {
+    object->position(strtoV3D(position));
+  }
 
   key = data->firstSubKey();
   while(key) {
