@@ -7,11 +7,13 @@
 #include "texture.h"
 
 Object::Object(Mesh *mesh, QGLShaderProgram *shaderProgram, Material *material):
+  _model(),
   _shaderProgram(shaderProgram),
   _mesh(mesh),
   _material(material),
   _textures()
 {
+  _model.setToIdentity();
 }
 
 Object::~Object()
@@ -41,19 +43,24 @@ void Object::addTexture(Texture *texture, const char *identifier)
   _textures.append(TexPair(buffer, texture));
 }
 
+void Object::position(const QVector3D &pos)
+{
+  _model.setToIdentity();
+  _model.translate(pos);
+}
+
 void Object::update(const InputState &state, float delta)
 {
 }
 
 void Object::draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection, const QMatrix4x4 &view)
 {
-  QMatrix4x4 model, mview, mvproj;
+  QMatrix4x4 mview, mvproj;
 
-  model.setToIdentity();
-  mview = view * model;
+  mview = view * _model;
   mvproj = projection * mview;
 
-  shaderProgram->setUniformValue("ModelMatrix", model);
+  shaderProgram->setUniformValue("ModelMatrix", _model);
   shaderProgram->setUniformValue("ViewMatrix", view);
   shaderProgram->setUniformValue("ProjectionMatrix", projection);
   shaderProgram->setUniformValue("ModelViewMatrix", mview);
