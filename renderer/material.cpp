@@ -17,13 +17,13 @@ void Material::apply(QGLShaderProgram *shaderProgram, const char *identifier)
   char *buffer = new char[strlen(identifier) + 16];
 
   sprintf(buffer, "%s.ambient", identifier);
-  shaderProgram->setUniformValue(identifier, ambient);
+  shaderProgram->setUniformValue(buffer, ambient);
 
   sprintf(buffer, "%s.diffuse", identifier);
-  shaderProgram->setUniformValue(identifier, diffuse);
+  shaderProgram->setUniformValue(buffer, diffuse);
 
   sprintf(buffer, "%s.specular", identifier);
-  shaderProgram->setUniformValue(identifier, specular);
+  shaderProgram->setUniformValue(buffer, specular);
 
   delete[] buffer;
 }
