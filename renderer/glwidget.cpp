@@ -62,7 +62,7 @@ void GLWidget::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  _scene = SceneParser::load("/home/julio/CG/Projeto3/Renderer/TestScene.txt");
+  _scene = SceneParser::load("/home/julio/CG/Projeto3/renderer/scenes/test.txt");
 }
 
 void GLWidget::paintGL() {
