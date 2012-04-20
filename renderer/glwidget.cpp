@@ -57,6 +57,9 @@ void GLWidget::renderMode(RenderMode mode) {
 }
 
 void GLWidget::initializeGL() {
+  qDebug("OpenGL version available: %s", glGetString(GL_VERSION));
+  qDebug("GLSL version available: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
   glClearColor(.2, .2, .6, 1.0);
 
   glEnable(GL_DEPTH_TEST);
