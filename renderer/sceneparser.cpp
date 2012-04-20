@@ -135,7 +135,7 @@ Object *SceneParser::loadObject(KeyValues *data)
         break;
       }
     }
-    else if (strcmp(key->name(), "material\n") == 0) {
+    else if (strcmp(key->name(), "material") == 0) {
       if(material) {
         fprintf(stderr, "Duplicated material definition\n");
       }
