@@ -1,0 +1,17 @@
+"scene" {
+  "object" {
+    "format" "PLY"
+    "file" "../models/dragon.ply"
+
+    "normals" "1"
+
+    "shader" {
+      "type" "vertex"
+      "file" "../shaders/normals/vshader.glsl"
+    }
+    "shader" {
+      "type" "fragment"
+      "file" "../shaders/normals/fshader.glsl"
+    }
+  }
+}
