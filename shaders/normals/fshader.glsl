@@ -2,7 +2,9 @@
 
 in vec4 v_Normal;
 
+out vec4 FragColor;
+
 void main() {
-  gl_FragColor.rgb = v_Normal.xyz;
-  gl_FragColor.a = 1.0;
+  FragColor.rgb = v_Normal.xyz;
+  FragColor.a = 1.0;
 }
