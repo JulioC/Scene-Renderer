@@ -7,13 +7,17 @@
 #include "texture.h"
 
 Object::Object(Mesh *mesh, QGLShaderProgram *shaderProgram, Material *material):
-  _model(),
+  _scale(1.0),
+  _position(0.0, 0.0, 0.0),
+  _pitch(0.0),
+  _yaw(0.0),
+  _modelMatrix(),
   _shaderProgram(shaderProgram),
   _mesh(mesh),
   _material(material),
   _textures()
 {
-  _model.setToIdentity();
+  rebuildModelMatrix();
 }
 
 Object::~Object()
@@ -43,26 +47,39 @@ void Object::addTexture(Texture *texture, const char *identifier)
   _textures.append(TexPair(buffer, texture));
 }
 
-void Object::position(const QVector3D &pos)
+void Object::scale(float scale)
 {
-  _model.setToIdentity();
-  _model.translate(pos);
+  _scale = scale;
+  rebuildModelMatrix();
+}
+
+void Object::position(const QVector3D &position)
+{
+  _position = position;
+  rebuildModelMatrix();
+}
+
+void Object::rotation(float pitch, float yaw)
+{
+  _pitch = pitch;
+  _yaw = yaw;
+  rebuildModelMatrix();
 }
 
 void Object::update(const InputState &state, float delta)
 {
 }
 
-void Object::draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection, const QMatrix4x4 &view)
+void Object::draw(QGLShaderProgram *shaderProgram, QMatrix4x4 &projectionMatrix, const QMatrix4x4 &viewMatrix)
 {
   QMatrix4x4 mview, mvproj;
 
-  mview = view * _model;
-  mvproj = projection * mview;
+  mview = viewMatrix * _modelMatrix;
+  mvproj = projectionMatrix * mview;
 
-  shaderProgram->setUniformValue("ModelMatrix", _model);
-  shaderProgram->setUniformValue("ViewMatrix", view);
-  shaderProgram->setUniformValue("ProjectionMatrix", projection);
+  shaderProgram->setUniformValue("ModelMatrix", _modelMatrix);
+  shaderProgram->setUniformValue("ViewMatrix", viewMatrix);
+  shaderProgram->setUniformValue("ProjectionMatrix", projectionMatrix);
   shaderProgram->setUniformValue("ModelViewMatrix", mview);
   shaderProgram->setUniformValue("ModelViewProjectionMatrix", mvproj);
   shaderProgram->setUniformValue("NormalMatrix", mview.normalMatrix());
@@ -84,4 +101,12 @@ QGLShaderProgram* Object::shaderProgram()
   return _shaderProgram;
 }
 
+void Object::rebuildModelMatrix()
+{
+  _modelMatrix.setToIdentity();
+  _modelMatrix.translate(_position);
+  _modelMatrix.rotate(_pitch, 1.0, 0.0);
+  _modelMatrix.rotate(_yaw, 0.0, 1.0);
+  _modelMatrix.scale(_scale);
+}
 

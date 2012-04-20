@@ -27,6 +27,8 @@ public:
 
   void renderMode(RenderMode mode);
 
+  void centerView();
+
 public slots:
   void animate();
 

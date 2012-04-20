@@ -21,17 +21,23 @@ public:
 
   void addTexture(Texture *texture, const char *identifier);
 
-  void position(const QVector3D &pos);
+  void scale(float scale);
+  void position(const QVector3D &position);
+  void rotation(float pitch, float yaw);
 
   virtual void update(const InputState &state, float delta);
-  virtual void draw(QGLShaderProgram *shaderProgram, const QMatrix4x4 &projection, const QMatrix4x4 &view);
+  virtual void draw(QGLShaderProgram *shaderProgram, QMatrix4x4 &projectionMatrix, const QMatrix4x4 &viewMatrix);
 
   QGLShaderProgram* shaderProgram();
 
 protected:
   typedef QPair<const char*, Texture*> TexPair;
 
-  QMatrix4x4 _model;
+  float _scale;
+  QVector3D _position;
+  float _pitch, _yaw;
+
+  QMatrix4x4 _modelMatrix;
 
   // TODO: should we really take care about this?
   QGLShaderProgram *_shaderProgram;
@@ -39,6 +45,8 @@ protected:
   Mesh *_mesh;
   Material *_material;
   QVector<TexPair> _textures;
+
+  void rebuildModelMatrix();
 };
 
 #endif // OBJECT_H

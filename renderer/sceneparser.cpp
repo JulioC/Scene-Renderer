@@ -162,6 +162,12 @@ Object *SceneParser::loadObject(KeyValues *data)
 
   Object *object = new Object(mesh, shaderProgram, material);
 
+  object->scale(data->getFloat("scale", 1.0));
+
+  float pitch = data->getFloat("pitch", 0.0);
+  float yaw = data->getFloat("yaw", 0.0);
+  object->rotation(pitch, yaw);
+
   const char *position = data->getString("position");
   if(position) {
     object->position(strtoV3D(position));

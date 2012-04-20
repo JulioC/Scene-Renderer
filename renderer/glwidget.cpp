@@ -27,6 +27,15 @@ GLWidget::~GLWidget()
   }
 }
 
+void GLWidget::loadScene(const char *filename) {
+  if(_scene) {
+    delete _scene;
+  }
+
+  _scene = SceneParser::load(filename);
+  rebuildProjection();
+}
+
 void GLWidget::animate()
 {
   _timer.update();
@@ -56,6 +65,11 @@ void GLWidget::renderMode(RenderMode mode) {
   glPolygonMode(GL_FRONT, glmode);
 }
 
+void GLWidget::centerView()
+{
+
+}
+
 void GLWidget::initializeGL() {
   qDebug("OpenGL version available: %s", glGetString(GL_VERSION));
   qDebug("GLSL version available: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -65,7 +79,7 @@ void GLWidget::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  _scene = SceneParser::load("/home/julio/CG/Projeto3/renderer/scenes/test.txt");
+  loadScene("../scenes/test.txt");
 }
 
 void GLWidget::paintGL() {

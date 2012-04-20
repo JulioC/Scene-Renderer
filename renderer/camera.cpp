@@ -8,22 +8,22 @@ Camera::Camera(float moveRate, float zoomRate, InputState::MouseButton button):
   _lastPoint(0.0, 0.0),
   _u(1.0, 0.0, 0.0),
   _v(0.0, 1.0, 0.0),
-  _translation(0.0, 0.0, 0.0),
-  _scale(1.0)
+  _w(0.0, 0.0, 1.0),
+  _translation(0.0, 0.0, 0.0)
 {
 }
 
-void Camera::setAxis(const QVector3D& u, const QVector3D& v)
+void Camera::setAxis(const QVector3D& u, const QVector3D& v, const QVector3D& w)
 {
   _u = u;
   _v = v;
+  _w = w;
 }
 
 void Camera::reset()
 {
   _pressed = false;
   _translation = QVector3D(0.0, 0.0, 0.0);
-  _scale = 1.0;
 }
 
 bool Camera::update(const InputState &state, float delta)
@@ -45,8 +45,8 @@ bool Camera::update(const InputState &state, float delta)
 
   int scroll = state.mouseScroll();
   if(scroll != 0) {
-    _scale += scroll * _zoomRate;
     changed = true;
+    _translation += 0.001 * scroll * _w;
   }
 
   return changed;
