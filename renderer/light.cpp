@@ -20,10 +20,10 @@ void Light::apply(QGLShaderProgram *shaderProgram, const char *identifier)
   char *buffer = new char[strlen(identifier) + 16];
 
   sprintf(buffer, "%s.position", identifier);
-  shaderProgram->setUniformValue(identifier, position);
+  shaderProgram->setUniformValue(buffer, position);
 
   sprintf(buffer, "%s.brightness", identifier);
-  shaderProgram->setUniformValue(identifier, brightness);
+  shaderProgram->setUniformValue(buffer, brightness);
 
   delete[] buffer;
 }
