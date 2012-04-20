@@ -1,0 +1,78 @@
+"scene" {
+  "object" {
+    "format" "OFF"
+    "file" "../models/homer.off"
+
+    "normals" "1"
+
+    "scale" "0.5"
+    "position" "-0.6 0.0 0.0"
+
+    "material" {
+      "ambient" "0.1 0.1 0.1 1.0"
+      "diffuse" "0.8 0.8 0.8 1.0"
+      "specular" "0.8 0.8 0.8 1.0"
+    }
+
+    "shader" {
+      "type" "vertex"
+      "file" "../shaders/blinn/vshader.glsl"
+    }
+    "shader" {
+      "type" "fragment"
+      "file" "../shaders/blinn/fshader.glsl"
+    }
+  }
+  "object" {
+    "format" "OFF"
+    "file" "../models/homer.off"
+
+    "normals" "1"
+
+    "scale" "0.5"
+    "position" "0.0 0.0 0.0"
+
+    "material" {
+      "ambient" "0.1 0.1 0.1 1.0"
+      "diffuse" "0.8 0.8 0.8 1.0"
+      "specular" "0.8 0.8 0.8 1.0"
+    }
+
+    "shader" {
+      "type" "vertex"
+      "file" "../shaders/gouraud/vshader.glsl"
+    }
+    "shader" {
+      "type" "fragment"
+      "file" "../shaders/gouraud/fshader.glsl"
+    }
+  }
+  "object" {
+    "format" "OFF"
+    "file" "../models/homer.off"
+
+    "normals" "1"
+
+    "scale" "0.5"
+    "position" "0.6 0.0 0.0"
+
+    "material" {
+      "ambient" "0.1 0.1 0.1 1.0"
+      "diffuse" "0.8 0.8 0.8 1.0"
+      "specular" "0.8 0.8 0.8 1.0"
+    }
+
+    "shader" {
+      "type" "vertex"
+      "file" "../shaders/phong/vshader.glsl"
+    }
+    "shader" {
+      "type" "fragment"
+      "file" "../shaders/phong/fshader.glsl"
+    }
+  }
+  "light" {
+    "position" "0.0 0.0 1.0"
+    "brightness" "1.0 1.0 1.0 1.0"
+  }
+}
