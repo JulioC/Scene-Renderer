@@ -20,7 +20,7 @@ uniform Material_t Material;
 uniform Light_t Lights[1];
 
 // TODO: change this to uniform
-const int Shininess = 10000;
+const int Shininess = 1000;
 
 void main() {
   vec3 N  = normalize(v_Normal.xyz);

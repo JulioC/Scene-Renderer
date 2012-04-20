@@ -20,14 +20,14 @@ uniform Material_t Material;
 uniform Light_t Lights[1];
 
 // TODO: change this to uniform
-const int Shininess = 10000;
+const int Shininess = 1000;
 
 void main() {
   vec3 N  = normalize(v_Normal.xyz);
   vec3 L = normalize(Lights[0].position - v_Position.xyz);
 
   vec3 V = normalize(-v_Position.xyz);
-  vec3 R = reflect(L, N);
+  vec3 R = reflect(-L, N);
 
   vec3 ambient = Material.ambient.rgb;
   vec3 diffuse = Material.diffuse.rgb * max(dot(L, N), 0.0);
