@@ -18,12 +18,6 @@ Texture::Texture(const char *filename, const char *identifier):
 
   image = image.convertToFormat(QImage::Format_ARGB32);
 
-  int width = image.width();
-  int height = image.height();
-  if (width != image.width() || height != image.height()) {
-      image = image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-  }
-
   glBindTexture(GL_TEXTURE_2D, _textureId);
 
   glTexImage2D(GL_TEXTURE_2D, 0, 4, image.width(), image.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, image.bits());
@@ -48,7 +42,7 @@ Texture::~Texture()
 
 void Texture::bind(QGLShaderProgram *shaderProgram)
 {
-  glActiveTexture(_textureId);
+  glActiveTexture(GL_TEXTURE0 + _textureId);
   glBindTexture(GL_TEXTURE_2D, _textureId);
   glEnable(GL_TEXTURE_2D);
   shaderProgram->setUniformValue(_identifier, _textureId);
