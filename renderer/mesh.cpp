@@ -1,6 +1,7 @@
 #include "mesh.h"
 
 #include <string.h>
+#include <math.h>
 
 #include <QVector3D>
 
@@ -41,6 +42,7 @@ MeshData::MeshData(uint nVertices, uint nTriangles) :
   _nVertices(nVertices),
   _nTriangles(nTriangles),
   _vertices(NULL),
+  _normals(NULL),
   _nAttributes(0),
   _attributes(),
   _triangles(NULL)
@@ -55,6 +57,9 @@ MeshData::~MeshData()
   // Delete everything
   for(uint i = 0; i < _nAttributes; ++i) {
     delete _attributes[i];
+  }
+  if(_normals) {
+    delete[] _normals;
   }
   delete[] _vertices;
   delete[] _triangles;
@@ -134,7 +139,7 @@ void MeshData::normalize(real_t size)
   QVector3D *vertices = (QVector3D*)_vertices;
 
   // Get the min and max values from the vertex values
-  for(uint i = 0; i < _nVertices; i++) {
+  for(uint i = 0; i < _nVertices; ++i) {
     if(vertices[i].x() < vmin.x()) { vmin.setX(vertices[i].x()); }
     if(vertices[i].y() < vmin.y()) { vmin.setY(vertices[i].y()); }
     if(vertices[i].z() < vmin.z()) { vmin.setZ(vertices[i].z()); }
@@ -159,6 +164,10 @@ void MeshData::normalize(real_t size)
 
 void MeshData::computeNormals(bool weighted, const char *identifier)
 {
+  if(_normals) {
+    return;
+  }
+
   // Zero the number of references for each vertex
   uint *count = new uint[_nVertices];
   memset(count, 0, _nVertices * sizeof(uint));
@@ -166,7 +175,7 @@ void MeshData::computeNormals(bool weighted, const char *identifier)
   QVector3D *vertices = (QVector3D*)_vertices;
 
   // Get the sum of vertex normals
-  QVector3D *vNormals = new QVector3D[_nVertices];
+  _normals = new QVector3D[_nVertices];
   for(uint i = 0; i < _nTriangles; ++i) {
     int offset = i * 3;
     ushort elements[] = {
@@ -184,25 +193,88 @@ void MeshData::computeNormals(bool weighted, const char *identifier)
     }
 
     // Store the normal to each vertex in triangle
-    for(int j = 0; j < 3; j++) {
-      vNormals[elements[j]] += area;
+    for(int j = 0; j < 3; ++j) {
+      _normals[elements[j]] += area;
       ++count[elements[j]];
     }
   }
 
   // Register the normal attribute
-  int attribute = regAttribute(identifier, (DataType)REAL_GL, sizeof(real_t), 3);
+  int attribute = regAttribute(identifier, Float, sizeof(float), 3);
 
   // Store the normals on the attribute
   for(uint i = 0; i < _nVertices; ++i) {
-    vNormals[i] /= count[i];
-    vNormals[i].normalize();
-    setAttribute(i, attribute, &(vNormals[i]));
+    _normals[i] /= count[i];
+    _normals[i].normalize();
+    setAttribute(i, attribute, &(_normals[i]));
   }
 
-  delete[] vNormals;
   delete[] count;
 }
+
+void MeshData::genTexCoords(TexCoordsMethod method, const char* identifier)
+{
+  // Register the normal attribute
+  int attribute = regAttribute(identifier, Float, sizeof(float), 2);
+
+  switch(method) {
+  case TexCoordsSphere:
+    genTexCoordsSphere(attribute);
+    break;
+  case TexCoordsCylinder:
+    genTexCoordsCylinder(attribute);
+    break;
+  }
+}
+
+void MeshData::genTexCoordsSphere(int attribute)
+{
+  if(!_normals) {
+    return;
+  }
+
+  real_t u, v;
+  QVector2D texCoords;
+  for(uint i = 0; i < _nVertices; ++i)    {
+      u = asin(_normals[i].x())/3.14 + 0.5;
+      v = asin(_normals[i].y())/3.14 + 0.5;
+      texCoords = QVector2D(u, v);
+      setAttribute(i, attribute, &(texCoords));
+  }
+}
+
+void MeshData::genTexCoordsCylinder(int attribute)
+{
+  QVector3D vmin(0, 0, 0);
+  QVector3D vmax(0, 0, 0);
+
+  QVector3D *vertices = (QVector3D*)_vertices;
+
+  // Get the min and max values from the vertex values
+  for(uint i = 0; i < _nVertices; ++i) {
+    if(vertices[i].x() < vmin.x()) { vmin.setX(vertices[i].x()); }
+    if(vertices[i].y() < vmin.y()) { vmin.setY(vertices[i].y()); }
+    if(vertices[i].z() < vmin.z()) { vmin.setZ(vertices[i].z()); }
+
+    if(vertices[i].x() > vmax.x()) { vmax.setX(vertices[i].x()); }
+    if(vertices[i].y() > vmax.y()) { vmax.setY(vertices[i].y()); }
+    if(vertices[i].z() > vmax.z()) { vmax.setZ(vertices[i].z()); }
+  }
+
+  QVector3D delta = (vmax - vmin);
+  QVector3D deltainv(1.0/delta.x(), 1.0/delta.y(), 1.0/delta.z());
+
+  real_t u, v, x;
+  QVector2D texCoords;
+  for(uint i = 0; i < _nVertices; ++i)    {
+    x = 2.0 *(vertices[i].x() - vmin.x()) * deltainv.x() - 1.0;
+      u = acos(x)/(3.14);
+      v = (vertices[i].y() - vmin.y()) * deltainv.y();
+      texCoords = QVector2D(u, v);
+      setAttribute(i, attribute, &(texCoords));
+  }
+}
+
 
 Mesh::Attribute::Attribute(const MeshData::Attribute &attribute, uint nVertices) :
   _identifier(NULL),
@@ -253,7 +325,7 @@ Mesh::Mesh(const MeshData *meshData, const char* vIdentifier) :
   // Build the vertex buffer and copy the data
   _vertices.create();
   _vertices.bind();
-  _vertices.allocate(meshData->vertices(), 3 * _nVertices * sizeof(real_t));
+  _vertices.allocate(meshData->vertices(), 3 * _nVertices * sizeof(float));
 
   // Build the index buffer and copy the data
   _triangles.create();
@@ -295,7 +367,7 @@ void Mesh::draw(QGLShaderProgram *shaderProgram)
   // Bind the vertex position attribute
   _vertices.bind();
   shaderProgram->enableAttributeArray(_vIdentifier);
-  shaderProgram->setAttributeBuffer(_vIdentifier, REAL_GL, 0, 3, 0);
+  shaderProgram->setAttributeBuffer(_vIdentifier, GL_FLOAT, 0, 3, 0);
 
   // Draw the elements
   _triangles.bind();

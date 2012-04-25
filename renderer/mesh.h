@@ -11,7 +11,7 @@
 #define MESH_MAX_ATTRIBUTES 16
 
 typedef float real_t;
-#define REAL_GL GL_FLOAT
+#define real_t_GL GL_FLOAT
 
 class MeshData
 {
@@ -26,6 +26,12 @@ public:
     UnsignedInt = GL_UNSIGNED_INT,
     Float = GL_FLOAT,
     Double = GL_DOUBLE
+  };
+
+  enum TexCoordsMethod
+  {
+    TexCoordsSphere,
+    TexCoordsCylinder
   };
 
   class Attribute
@@ -62,7 +68,6 @@ public:
     Attribute& operator=(Attribute &);
   };
 
-public:
   MeshData(uint nVertices, uint nTriangles);
   ~MeshData();
 
@@ -89,16 +94,23 @@ public:
   void normalize(real_t size = 1.0);
   void computeNormals(bool weighted = false, const char* identifier = "a_Normal");
 
+  void genTexCoords(TexCoordsMethod method, const char* identifier = "a_TexCoords");
+
 protected:
   uint _nVertices;
   uint _nTriangles;
 
+  // TODO: use a type for everything
   real_t *_vertices;
+  QVector3D *_normals;
 
   uint _nAttributes;
   Attribute *_attributes[MESH_MAX_ATTRIBUTES];
 
   ushort *_triangles;
+
+  void genTexCoordsSphere(int attribute);
+  void genTexCoordsCylinder(int attribute);
 
 private:
   MeshData(MeshData &);
