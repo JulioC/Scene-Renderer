@@ -106,6 +106,18 @@ Object *SceneParser::loadObject(KeyValues *data)
       meshData->computeNormals();
     }
 
+    const char *texcoords = data->getString("texcoords");
+    if(texcoords) {
+      MeshData::TexCoordsMethod method;
+      if(strcmp(texcoords, "sphere") == 0) {
+        method = MeshData::TexCoordsSphere;
+      }
+      else if(strcmp(texcoords, "cylinder") == 0) {
+        method = MeshData::TexCoordsCylinder;
+      }
+      meshData->genTexCoords(method);
+    }
+
     mesh = new Mesh(meshData);
 
     delete meshData;
