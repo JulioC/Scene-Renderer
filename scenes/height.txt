@@ -3,6 +3,8 @@
     "format" "PLY"
     "file" "../models/dragon.ply"
 
+    "normals" "1"
+
     "shader" {
       "type" "vertex"
       "file" "../shaders/height/vshader.glsl"
