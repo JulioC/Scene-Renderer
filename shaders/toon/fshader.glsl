@@ -1,25 +1,40 @@
-#version 420
+#version 330
 
+struct Light_t {
+  vec3 position;
+  vec4 brightness;
+};
+
+struct Material_t {
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+};
+
+in vec4 v_Position;
 in vec4 v_Normal;
 
-uniform vec4 LightPosition;
+out vec4 FragColor;
 
-void main() {
+uniform Material_t Material;
+uniform Light_t Lights[1];
+
+// TODO: change this to uniform
+const int Shininess = 1000;
+const float Toonish = 6.0;
+
+void main()
+{
   vec3 N  = normalize(v_Normal.xyz);
-  vec3 L = normalize(LightPosition.xyz);
+  vec3 L = normalize(Lights[0].position - v_Position.xyz);
 
-  float intensity = dot(L, N);
-  vec4 color;
-  if (intensity > 0.95)
+  vec3 V = normalize(-v_Position.xyz);
+  vec3 R = reflect(-L, N);
 
-    color = vec4(1.0,0.5,0.5,1.0);
-  else if (intensity > 0.5)
-    color = vec4(0.6,0.3,0.3,1.0);
-  else if (intensity > 0.15)
-    color = vec4(0.4,0.2,0.2,1.0);
-  else
-    color = vec4(0.2,0.1,0.1,1.0);
+  vec3 ambient = Material.ambient.rgb;
+  vec3 diffuse = Material.diffuse.rgb * max(dot(L, N), 0.0);
+  vec3 specular = Material.specular.rgb * pow(max(dot(R, V), 0.0), Shininess);
 
-  gl_FragColor = color;
-
+  FragColor.rgb = Lights[0].brightness.rgb * (ambient + floor((diffuse + specular) * Toonish) / Toonish);
+  FragColor.a = 1.0;
 }
