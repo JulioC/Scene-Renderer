@@ -19,7 +19,7 @@ public:
   Object(Mesh *mesh, QGLShaderProgram *shaderProgram, Material *material = NULL);
   virtual ~Object();
 
-  void addTexture(Texture *texture, const char *identifier);
+  void addTexture(Texture *texture);
 
   void scale(float scale);
   void position(const QVector3D &position);
@@ -31,8 +31,6 @@ public:
   QGLShaderProgram* shaderProgram();
 
 protected:
-  typedef QPair<const char*, Texture*> TexPair;
-
   float _scale;
   QVector3D _position;
   float _pitch, _yaw;
@@ -44,7 +42,7 @@ protected:
 
   Mesh *_mesh;
   Material *_material;
-  QVector<TexPair> _textures;
+  QVector<Texture*> _textures;
 
   void rebuildModelMatrix();
 };

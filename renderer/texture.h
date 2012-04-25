@@ -10,10 +10,10 @@ class QGLShaderProgram;
 class Texture
 {
 public:
-  Texture(const char* filename);
+  Texture(const char* filename, const char *identifier);
   ~Texture();
 
-  void bind(QGLShaderProgram *shaderProgram, const char *identifier);
+  void bind(QGLShaderProgram *shaderProgram);
 
 protected:
   GLuint _textureId;

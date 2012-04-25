@@ -34,17 +34,13 @@ Object::~Object()
   }
 
   for(int i = 0, s = _textures.size(); i < s; ++i) {
-    TexPair pair = _textures.at(i);
-    delete[] pair.first;
-    delete pair.second;
+    delete _textures.at(i);
   }
 }
 
-void Object::addTexture(Texture *texture, const char *identifier)
+void Object::addTexture(Texture *texture)
 {
-  char *buffer = new char[strlen(identifier) + 1];
-  strcpy(buffer, identifier);
-  _textures.append(TexPair(buffer, texture));
+  _textures.append(texture);
 }
 
 void Object::scale(float scale)
@@ -85,8 +81,7 @@ void Object::draw(QGLShaderProgram *shaderProgram, QMatrix4x4 &projectionMatrix,
   shaderProgram->setUniformValue("NormalMatrix", mview.normalMatrix());
 
   for(int i = 0, s = _textures.size(); i < s; ++i) {
-    TexPair pair = _textures.at(i);
-    pair.second->bind(shaderProgram, pair.first);
+    _textures.at(i)->bind(shaderProgram);
   }
 
   if(_material) {
