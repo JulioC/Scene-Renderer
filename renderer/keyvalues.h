@@ -28,7 +28,7 @@ public:
 
   int getInt(const char *name = NULL, int value = 0);
   float getFloat(const char *name = NULL, float value = 0.0f);
-  const char *getString(const char *name = NULL, const char *value = "");
+  const char *getString(const char *name = NULL, const char *value = NULL);
   bool isEmpty(const char* name = NULL);
 
   void print(FILE *out = stdout, uint indentation = 0);
