@@ -1,0 +1,33 @@
+"scene" {
+  "object" {
+    "format" "OFF"
+    "file" "../models/elk.off"
+
+    "normals" "1"
+    "texcoords" "cylinder"
+
+    "material" {
+      "ambient" "0.1 0.1 0.1 1.0"
+      "diffuse" "1.0 1.0 1.0 1.0"
+      "specular" "0.4 0.4 0.4 1.0"
+    }
+
+    "texture" {
+      "identifier" "texMap"
+      "file" "../textures/wood.jpg"
+    }
+
+    "shader" {
+      "type" "vertex"
+      "file" "../shaders/texphong/vshader.glsl"
+    }
+    "shader" {
+      "type" "fragment"
+      "file" "../shaders/texphong/fshader.glsl"
+    }
+  }
+  "light" {
+    "position" "0.0 0.0 1.0"
+    "brightness" "1.0 1.0 1.0 1.0"
+  }
+}
