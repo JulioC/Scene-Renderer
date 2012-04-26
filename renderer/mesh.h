@@ -96,6 +96,8 @@ public:
 
   void genTexCoords(TexCoordsMethod method, const char* identifier = "a_TexCoords");
 
+  void genTangents(const char* tIdentifier = "a_Tangent", const char *bIdentifier = "a_Bitangent");
+
 protected:
   uint _nVertices;
   uint _nTriangles;
@@ -103,6 +105,7 @@ protected:
   // TODO: use a type for everything
   real_t *_vertices;
   QVector3D *_normals;
+  QVector2D *_texCoords;
 
   uint _nAttributes;
   Attribute *_attributes[MESH_MAX_ATTRIBUTES];

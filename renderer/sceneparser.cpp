@@ -118,6 +118,10 @@ Object *SceneParser::loadObject(KeyValues *data)
       meshData->genTexCoords(method);
     }
 
+    if(data->getInt("tangents", 0)) {
+      meshData->genTangents();
+    }
+
     mesh = new Mesh(meshData);
 
     delete meshData;

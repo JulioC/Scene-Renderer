@@ -43,6 +43,7 @@ MeshData::MeshData(uint nVertices, uint nTriangles) :
   _nTriangles(nTriangles),
   _vertices(NULL),
   _normals(NULL),
+  _texCoords(NULL),
   _nAttributes(0),
   _attributes(),
   _triangles(NULL)
@@ -57,6 +58,9 @@ MeshData::~MeshData()
   // Delete everything
   for(uint i = 0; i < _nAttributes; ++i) {
     delete _attributes[i];
+  }
+  if(_texCoords) {
+    delete[] _texCoords;
   }
   if(_normals) {
     delete[] _normals;
@@ -168,10 +172,6 @@ void MeshData::computeNormals(bool weighted, const char *identifier)
     return;
   }
 
-  // Zero the number of references for each vertex
-  uint *count = new uint[_nVertices];
-  memset(count, 0, _nVertices * sizeof(uint));
-
   QVector3D *vertices = (QVector3D*)_vertices;
 
   // Get the sum of vertex normals
@@ -195,7 +195,6 @@ void MeshData::computeNormals(bool weighted, const char *identifier)
     // Store the normal to each vertex in triangle
     for(int j = 0; j < 3; ++j) {
       _normals[elements[j]] += area;
-      ++count[elements[j]];
     }
   }
 
@@ -204,16 +203,19 @@ void MeshData::computeNormals(bool weighted, const char *identifier)
 
   // Store the normals on the attribute
   for(uint i = 0; i < _nVertices; ++i) {
-    _normals[i] /= count[i];
     _normals[i].normalize();
     setAttribute(i, attribute, &(_normals[i]));
   }
-
-  delete[] count;
 }
 
 void MeshData::genTexCoords(TexCoordsMethod method, const char* identifier)
 {
+  if(_texCoords) {
+    return;
+  }
+
+  _texCoords = new QVector2D[_nVertices];
+
   // Register the normal attribute
   int attribute = regAttribute(identifier, Float, sizeof(float), 2);
 
@@ -234,12 +236,11 @@ void MeshData::genTexCoordsSphere(int attribute)
   }
 
   real_t u, v;
-  QVector2D texCoords;
   for(uint i = 0; i < _nVertices; ++i)    {
       u = asin(_normals[i].x())/3.14 + 0.5;
       v = asin(_normals[i].y())/3.14 + 0.5;
-      texCoords = QVector2D(u, v);
-      setAttribute(i, attribute, &(texCoords));
+      _texCoords[i] = QVector2D(u, v);
+      setAttribute(i, attribute, &(_texCoords[i]));
   }
 }
 
@@ -265,16 +266,63 @@ void MeshData::genTexCoordsCylinder(int attribute)
   QVector3D deltainv(1.0/delta.x(), 1.0/delta.y(), 1.0/delta.z());
 
   real_t u, v, x;
-  QVector2D texCoords;
   for(uint i = 0; i < _nVertices; ++i)    {
     x = 2.0 *(vertices[i].x() - vmin.x()) * deltainv.x() - 1.0;
       u = acos(x)/(3.14);
       v = (vertices[i].y() - vmin.y()) * deltainv.y();
-      texCoords = QVector2D(u, v);
-      setAttribute(i, attribute, &(texCoords));
+      _texCoords[i] = QVector2D(u, v);
+      setAttribute(i, attribute, &(_texCoords[i]));
   }
 }
 
+void MeshData::genTangents(const char *tIdentifier, const char *bIdentifier)
+{
+  if(!_texCoords || !_normals) {
+    return;
+  }
+
+  QVector3D *tangents = new QVector3D[_nVertices];
+
+  QVector3D *vertices = (QVector3D*)_vertices;
+
+  for(uint i = 0; i < _nTriangles; ++i) {
+    int offset = i * 3;
+    ushort elements[] = {
+      _triangles[offset],
+      _triangles[offset + 1],
+      _triangles[offset + 2]
+    };
+
+    QVector3D a = vertices[elements[1]] - vertices[elements[0]];
+    QVector3D b = vertices[elements[2]] - vertices[elements[0]];
+
+    QVector2D c = _texCoords[elements[1]] - _texCoords[elements[0]];
+    QVector2D d = _texCoords[elements[2]] - _texCoords[elements[0]];
+
+    float r = 1.0 / (c.x() * d.y() - d.x() * c.y());
+
+    QVector3D sdir((d.y() * a.x() - c.y() * b.x()) * r,
+                   (d.y() * a.y() - c.y() * b.y()) * r,
+                   (d.y() * a.z() - c.y() * b.z()) * r);
+
+    for(int j = 0; j < 3; ++j) {
+      tangents[elements[j]] += sdir;
+    }
+  }
+
+  int attrTangent = regAttribute(tIdentifier, Float, sizeof(float), 4);
+
+  for(uint i = 0; i < _nVertices; ++i) {
+    const QVector3D &n = _normals[i];
+    const QVector3D &t = tangents[i];
+
+    tangents[i] = (t - n * QVector3D::dotProduct(t, n)).normalized();
+
+    setAttribute(i, attrTangent, &(tangents[i]));
+  }
+
+  delete[] tangents;
+}
 
 Mesh::Attribute::Attribute(const MeshData::Attribute &attribute, uint nVertices) :
   _identifier(NULL),
