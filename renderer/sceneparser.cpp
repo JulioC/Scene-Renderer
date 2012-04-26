@@ -187,11 +187,22 @@ Object *SceneParser::loadObject(KeyValues *data)
 
   key = data->firstSubKey();
   while(key) {
-   if (strcmp(key->name(), "texture") == 0) {
-      fprintf(stderr, "Loading texture\n");
-      key->print(stderr);
+    if (strcmp(key->name(), "texture") == 0) {
+      Texture *texture = loadTexture(key);
+      if(texture) {
+        object->addTexture(texture);
+      }
+      else {
+        fprintf(stderr, "Failed to load texture\n");
+        error = true;
+        break;
+      }
     }
     key = key->nextKey();
+  }
+
+  if(error) {
+    return object;
   }
 
   return object;
@@ -246,9 +257,23 @@ Material *SceneParser::loadMaterial(KeyValues *data)
 
   return new Material(strtoV4D(ambient), strtoV4D(diffuse), strtoV4D(specular));
 }
+
 Texture *SceneParser::loadTexture(KeyValues *data)
 {
-  return NULL;
+  const char* identifier = data->getString("identifier");
+  if(!identifier) {
+    fprintf(stderr, "Key 'identifier' not found on Texture\n");
+    return NULL;
+  }
+
+  const char *file = data->getString("file");
+  if(!file) {
+    fprintf(stderr, "Key 'file' not found on Texture\n");
+    return NULL;
+  }
+  char *filename = resolvePath(file);
+
+  return new Texture(filename, identifier);
 }
 
 Light *SceneParser::loadLight(KeyValues *data)
