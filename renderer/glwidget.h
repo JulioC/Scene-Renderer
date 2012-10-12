@@ -39,6 +39,7 @@ protected:
   InputState _inputState;
 
   Scene *_scene;
+  Scene *_nextScene;
 
   void initializeGL();
   void paintGL();

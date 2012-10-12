@@ -1,25 +1,40 @@
-#version 420
+#version 330 core
 
-in float v_NL;
-in vec3 v_Reflect;
-in vec3 v_View;
+struct Light_t {
+  vec3 position;
+  vec4 brightness;
+};
 
+struct Material_t {
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+};
+
+in vec4 v_Normal;
+in vec4 v_Position;
+in vec2 v_TexCoords;
+
+out vec4 FragColor;
+
+uniform sampler2D texMap;
+
+uniform Material_t Material;
+uniform Light_t Lights[1];
+
+// TODO: change this to uniform
 vec3 SurfaceColor = vec3(0.75, 0.75, 0.75);
-vec3 WarmColor    = vec3(0.1, 0.4, 0.8);
-vec3 CoolColor    = vec3(0.6, 0.0, 0.0);
+vec3 WarmColor    = vec3(1.0, 1.0, 0.0);
+vec3 CoolColor    = vec3(0.0, 0.0, 1.0);
 float DiffuseWarm = 0.45;
 float DiffuseCool = 0.045;
 
 void main() {
-  vec3 kcool    = min(CoolColor + DiffuseCool * vec3(1.0), 1.0);
-  vec3 kwarm    = min(WarmColor + DiffuseWarm * vec3(1.0), 1.0);
-  vec3 kfinal   = mix(kcool, kwarm, v_NL) * 1.0;
+FragColor = texture2D(texMap,v_TexCoords);
+FragColor.a = 1.0;
 
-  vec3 nreflect = normalize(v_Reflect);
-  vec3 nview    = normalize(v_View);
 
-  float spec    = max(dot(nreflect, nview), 0.0);
-  spec          = pow(spec, 32.0);
-
-  gl_FragColor = vec4(min(kfinal + spec, 1.0), 1.0);
 }
+
+
+

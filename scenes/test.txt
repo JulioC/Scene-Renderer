@@ -1,76 +1,34 @@
 "scene" {
   "object" {
-    // Mesh format
-    // - OFF
-    // - PLY
-    // - torus (unimplemented)
-    // - sphere (unimplemented)
-    // - cube (unimplemented)
-    "format" "PLY"
+    "format" "OFF"
+    "file" "../models/homer.off"
 
-    // File name (for OFF or PLY formats)
-    "file" "../models/dragon.ply"
-
-    "position" "0.5 0.0 0.0"
-
-    // Calcule normals  (boolean)
     "normals" "1"
+    "texcoords" "cylinder"
+    "tangents" "1"
 
-    // Generate texture coordinates (boolean)
-    "texcords" "1"
-
-    // Material
-    // ambient, diffuse, specular in rgba
     "material" {
-      "ambient" "0.0 0.1 0.2 1.0"
-      "diffuse" "0.0 0.1 0.3 1.0"
-      "specular" "0.0 0.1 0.4 1.0"
+      "ambient" "0.1 0.1 0.1 1.0"
+      "diffuse" "0.6 0.6 0.6 1.0"
+      "specular" "1.0 1.0 1.0 1.0"
+    }
+
+    "texture" {
+      "identifier" "texBumpMap"
+      "file" "../textures/fieldstone-n.jpg"
     }
 
     "shader" {
       "type" "vertex"
-      "file" "../shaders/normals/vshader.glsl"
+      "file" "../shaders/bumpmap/vshader.glsl"
     }
     "shader" {
       "type" "fragment"
-      "file" "../shaders/normals/fshader.glsl"
+      "file" "../shaders/bumpmap/fshader.glsl"
     }
   }
-  "object" {
-    // Mesh format
-    // - OFF
-    // - PLY
-    // - torus (unimplemented)
-    // - sphere (unimplemented)
-    // - cube (unimplemented)
-    "format" "PLY"
-
-    // File name (for OFF or PLY formats)
-    "file" "../models/bunny.ply"
-
-    "position" "-0.5 0.0 0.0"
-
-    // Calcule normals  (boolean)
-    "normals" "1"
-
-    // Generate texture coordinates (boolean)
-    "texcords" "1"
-
-    // Material
-    // ambient, diffuse, specular in rgba
-    "material" {
-      "ambient" "1.0 0.0 0.0 1.0"
-      "diffuse" "0.0 1.0 0.0 1.0"
-      "specular" "0.0 0.0 1.0 1.0"
-    }
-
-    "shader" {
-      "type" "vertex"
-      "file" "../shaders/phong/vshader.glsl"
-    }
-    "shader" {
-      "type" "fragment"
-      "file" "../shaders/phong/fshader.glsl"
-    }
+  "light" {
+    "position" "0.0 0.0 1.0"
+    "brightness" "1.0 1.0 1.0 1.0"
   }
 }

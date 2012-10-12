@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     texture.cpp \
     keyvalues.cpp \
     sceneparser.cpp \
-    timer.cpp
+    timer.cpp \
+    meshgenerator.cpp
 
 HEADERS += \
     mesh.h \
@@ -34,7 +35,8 @@ HEADERS += \
     texture.h \
     keyvalues.h \
     sceneparser.h \
-    timer.h
+    timer.h \
+    meshgenerator.h
 
 FORMS += \
     mainwindow.ui

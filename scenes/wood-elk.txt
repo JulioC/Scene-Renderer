@@ -4,7 +4,7 @@
     "file" "../models/elk.off"
 
     "normals" "1"
-    "texcoords" "cylinder"
+    "texcoords" "spherical"
 
     "material" {
       "ambient" "0.1 0.1 0.1 1.0"

@@ -12,7 +12,8 @@ GLWidget::GLWidget(QWidget *parent) :
   _timer(),
   _qtimer(this),
   _inputState(),
-  _scene(NULL)
+  _scene(NULL),
+  _nextScene(NULL)
 {
   connect(&_qtimer, SIGNAL(timeout()), this, SLOT(animate()));
   _qtimer.start(0.01);
@@ -22,15 +23,20 @@ GLWidget::GLWidget(QWidget *parent) :
 
 GLWidget::~GLWidget()
 {
+  if(_nextScene) {
+    delete _nextScene;
+  }
   if(_scene) {
     delete _scene;
   }
 }
 
 void GLWidget::loadScene(const char *filename) {
-  if(_scene) {
-    delete _scene;
-  }
+  // TODO: figure out how to safely free current scene
+  // We are leaking the entire scene here
+  //if(_scene) {
+  //  delete _scene;
+  //}
 
   _scene = SceneParser::load(filename);
   rebuildProjection();
@@ -74,7 +80,7 @@ void GLWidget::initializeGL() {
   qDebug("OpenGL version available: %s", glGetString(GL_VERSION));
   qDebug("GLSL version available: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-  glClearColor(.2, .2, .6, 1.0);
+  glClearColor(.1, .1, .1, 1.0);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -87,6 +93,16 @@ void GLWidget::paintGL() {
 
   if(_scene) {
     _scene->draw();
+  }
+
+  if(_nextScene) {
+    if(_scene) {
+      delete _scene;
+    }
+    _scene = _nextScene;
+    _nextScene = NULL;
+
+    rebuildProjection();
   }
 }
 
